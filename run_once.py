@@ -60,20 +60,17 @@ def main():
             logger.error(f"Erreur {pair_name}: {e}")
             continue
 
-    # Envoi Telegram
-    if signals:
-        logger.info(f"Envoi de {len(signals)} signaux sur Telegram...")
-        send_signals_summary(signals)
-        time.sleep(1)
-
-        # Signaux forts individuels
-        for s in [s for s in signals if s.is_strong and s.signal != "HOLD"]:
+    # Envoi Telegram (uniquement les signaux forts)
+    strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
+    
+    if strong_signals:
+        logger.info(f"Envoi de {len(strong_signals)} signaux forts sur Telegram...")
+        for s in strong_signals:
             send_signal(s)
             time.sleep(0.5)
-
-        logger.info(f"OK — {len(signals)} signaux envoyés !")
+        logger.info(f"OK — {len(strong_signals)} signaux forts envoyés !")
     else:
-        logger.warning("Aucun signal généré")
+        logger.info("Aucun signal fort détecté pour cette heure-ci.")
 
     logger.info("=== Analyse terminée ===")
 
