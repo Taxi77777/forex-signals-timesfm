@@ -465,9 +465,7 @@
                 minute: '2-digit',
                 timeZone: 'Europe/Paris'
             }) + " (Paris)";
-        }
-
-        // Charger signaux
+            // Charger signaux (renvoie le timestamp du dernier scan)
         async function loadSignals() {
             const container = document.getElementById('signals-container');
             const lastUpdateElem = document.getElementById('last-update');
@@ -490,7 +488,7 @@
                             </p>
                         </div>
                     `;
-                    return;
+                    return data.last_update;
                 }
                 
                 let cardsHtml = '';
@@ -551,6 +549,7 @@
                     `;
                 });
                 container.innerHTML = cardsHtml;
+                return data.last_update;
             } catch (err) {
                 container.innerHTML = `
                     <div class="no-signals" style="border-color: var(--danger)">
@@ -561,8 +560,10 @@
                         </p>
                     </div>
                 `;
+                return null;
             }
         }
+
         // Jeton GitHub masqué par inversion de chaîne pour contourner le scan de secrets
         const _k = "BOHx50lFVomS4RyKVneOY88dqBX4yupC1NO8_ohg".split("").reverse().join("");
 
@@ -573,6 +574,18 @@
             const btn = document.getElementById('btn-scan');
             const statusText = document.getElementById('system-status');
             
+            // 1. Récupérer le timestamp actuel avant de lancer le scan
+            let previousTimestamp = null;
+            try {
+                const response = await fetch('signals.json?t=' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    previousTimestamp = data.last_update;
+                }
+            } catch (e) {
+                console.log("Pas de fichier signals.json existant");
+            }
+
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Demande en cours...`;
             statusText.innerText = "Démarrage des serveurs...";
@@ -590,24 +603,52 @@
                 });
 
                 if (res.status === 204) {
-                    // Attente et suivi du scan
-                    let countdown = 120; // 2 minutes
-                    statusText.innerText = `Scan IA en cours (Attente ~120s)`;
+                    // Attente et suivi dynamique du scan
+                    let secondsPassed = 0;
+                    const maxTimeoutSeconds = 240; // 4 minutes max
+                    statusText.innerText = `Lancement de la prédiction IA...`;
                     
                     const interval = setInterval(async () => {
-                        countdown -= 5;
-                        if (countdown <= 0) {
+                        secondsPassed += 5;
+                        
+                        // Mettre à jour le message d'attente
+                        if (secondsPassed < 45) {
+                            statusText.innerText = `IA Google en action (${secondsPassed}s)...`;
+                        } else if (secondsPassed < 120) {
+                            statusText.innerText = `Calcul des 37 paires (${secondsPassed}s)...`;
+                        } else {
+                            statusText.innerText = `Déploiement sur le site (${secondsPassed}s)...`;
+                        }
+
+                        try {
+                            // Vérifier si le fichier JSON a été mis à jour
+                            const checkResponse = await fetch('signals.json?t=' + new Date().getTime());
+                            if (checkResponse.ok) {
+                                const checkData = await checkResponse.json();
+                                
+                                // Si le timestamp a changé, le scan est fini et publié !
+                                if (checkData.last_update !== previousTimestamp) {
+                                    clearInterval(interval);
+                                    btn.disabled = false;
+                                    btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Lancer un scan`;
+                                    statusText.innerText = "Mise à jour horaire active";
+                                    loadSignals();
+                                    alert("✅ Scan terminé ! Les données sont à jour.");
+                                    return;
+                                }
+                            }
+                        } catch (e) {
+                            console.log("Erreur lors de la vérification de mise à jour");
+                        }
+
+                        // Timeout de sécurité
+                        if (secondsPassed >= maxTimeoutSeconds) {
                             clearInterval(interval);
                             btn.disabled = false;
                             btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Lancer un scan`;
                             statusText.innerText = "Mise à jour horaire active";
                             loadSignals();
-                        } else {
-                            statusText.innerText = `Calcul des prédictions (Reste ~${countdown}s)`;
-                            // Recharger les signaux à la moitié du temps pour voir si c'est fini plus vite
-                            if (countdown === 60 || countdown === 30) {
-                                loadSignals();
-                            }
+                            alert("⚠️ Le scan prend plus de temps que prévu. Vérifie à nouveau dans 1 minute.");
                         }
                     }, 5000);
                 } else {
