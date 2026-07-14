@@ -109,7 +109,8 @@ Si le bot est lancé en mode interactif (`python interactive_bot.py`), tu peux l
 
 - `/start` : Message d'accueil et aide.
 - `/liste` : Affiche les 37 devises disponibles.
-- `/predit [PAIRE]` : Lance une prédiction TimesFM immédiate (ex: `/predit EURUSD` ou `/predit gbp/usd`).
+- `/predit` : Lance un scan complet en temps réel des 37 devises et affiche **uniquement** les signaux forts (Confiance >= 70%).
+- `/predit [PAIRE]` : Lance une prédiction TimesFM immédiate pour une devise spécifique (ex: `/predit EURUSD` ou `/predit GBPUSD`).
 
 ---
 
