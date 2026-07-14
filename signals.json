@@ -1,38 +1,27 @@
 {
-  "last_update": "2026-07-14T20:55:14.841689+00:00",
+  "last_update": "2026-07-14T21:01:31.123594+00:00",
   "signals": [
     {
       "pair_name": "USD/JPY",
       "signal": "BUY",
-      "current_price": 162.255,
-      "take_profit": 162.49654,
-      "stop_loss": 162.09398,
-      "confidence": 77,
-      "rsi": 53.9,
+      "current_price": 162.183,
+      "take_profit": 162.42014,
+      "stop_loss": 162.0249,
+      "confidence": 87,
+      "rsi": 49.6,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
-      "pair_name": "AUD/JPY",
-      "signal": "SELL",
-      "current_price": 113.146,
-      "take_profit": 112.94784,
-      "stop_loss": 113.27811,
+      "pair_name": "EUR/AUD",
+      "signal": "BUY",
+      "current_price": 1.63658,
+      "take_profit": 1.63926,
+      "stop_loss": 1.63479,
       "confidence": 70,
-      "rsi": 70.7,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "SELL"
-    },
-    {
-      "pair_name": "AUD/CHF",
-      "signal": "SELL",
-      "current_price": 0.56434,
-      "take_profit": 0.56251,
-      "stop_loss": 0.56556,
-      "confidence": 75,
-      "rsi": 59.3,
+      "rsi": 28.0,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "SELL"
+      "forecast_dir": "BUY"
     }
   ]
 }
