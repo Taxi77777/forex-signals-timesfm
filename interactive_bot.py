@@ -65,15 +65,60 @@ async def liste_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def predit_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Commande /predit [PAIRE]"""
-    # Vérifier l'argument
+    """Commande /predit [PAIRE] ou /predit (sans arguments pour scanner tous les signaux forts)"""
+    # ─── Cas 1 : SCAN DE TOUTES LES DEVISES (Seulement signaux forts) ────────────────
     if not context.args:
-        await update.message.reply_text(
-            "⚠️ *Usage correct :* `/predit EURUSD` ou `/predit GBPUSD`",
+        loading_msg = await update.message.reply_text(
+            "⏳ *Scan complet des 37 devises en cours...*\n_Recherche uniquement des signaux forts (Confiance >= 70%). Cela prend environ 20-30 secondes._",
             parse_mode="Markdown"
         )
+        
+        try:
+            from src.data_fetcher import fetch_all_pairs
+            all_data = fetch_all_pairs()
+            
+            if not all_data:
+                await loading_msg.edit_text("❌ Impossible de récupérer les données du marché.")
+                return
+
+            strong_signals = []
+            
+            for symbol, df in all_data.items():
+                try:
+                    df_ind = compute_all_indicators(df)
+                    if df_ind.empty:
+                        continue
+                    price_series = prepare_timesfm_input(df)
+                    predictions = predict_timesfm(price_series)
+                    signal = generate_signal(symbol, df_ind, predictions)
+                    
+                    if signal and signal.is_strong and signal.signal != "HOLD":
+                        strong_signals.append(signal)
+                except Exception as e:
+                    logger.error(f"Erreur lors de l'analyse de {symbol}: {e}")
+                    continue
+
+            await loading_msg.delete()
+
+            if not strong_signals:
+                await update.message.reply_text(
+                    "⏸️ *Aucun signal fort (Confiance >= 70%) détecté actuellement sur les 37 devises.*",
+                    parse_mode="Markdown"
+                )
+                return
+
+            # Envoyer chaque signal fort individuellement
+            for sig in strong_signals:
+                msg = format_signal_message(sig)
+                await update.message.reply_text(msg, parse_mode="Markdown")
+                await asyncio.sleep(0.5)
+
+        except Exception as e:
+            logger.error(f"Erreur lors du scan complet: {e}", exc_info=True)
+            await loading_msg.edit_text(f"❌ Une erreur est survenue pendant le scan : `{str(e)[:100]}`")
         return
 
+    # ─── Cas 2 : PREDITION D'UNE PAIRE SPECIFIQUE ───────────────────────────────────
     raw_pair = context.args[0].upper().replace("/", "").replace("-", "")
     
     # Trouver le symbole Yahoo correspondant
