@@ -1,0 +1,42 @@
+name: Forex Signals Bot — Toutes les heures
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # Chaque heure pile (00 min de chaque heure)
+  workflow_dispatch:        # Bouton "Run" manuel depuis GitHub
+
+jobs:
+  send-signals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Installation Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Installation des dépendances
+        run: pip install -r requirements.txt
+
+      - name: Lancement de l'analyse Forex
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          USE_TIMESFM: 'true'
+          DATA_INTERVAL: '1h'
+          SIGNAL_FREQUENCY_HOURS: '1'
+          LOG_LEVEL: 'INFO'
+        run: python run_once.py
+
+      - name: Sauvegarde des logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forex-logs-${{ github.run_number }}
+          path: logs/signals.log
+          retention-days: 7
