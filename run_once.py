@@ -63,6 +63,31 @@ def main():
     # Envoi Telegram (uniquement les signaux forts)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
     
+    # Exporter au format JSON pour le site web (GitHub Pages)
+    import json
+    from datetime import datetime, timezone
+    
+    web_data = {
+        "last_update": datetime.now(timezone.utc).isoformat(),
+        "signals": [
+            {
+                "pair_name": s.pair_name,
+                "signal": s.signal,
+                "current_price": s.current_price,
+                "take_profit": s.take_profit,
+                "stop_loss": s.stop_loss,
+                "confidence": s.confidence,
+                "rsi": s.rsi,
+                "macd_trend": s.macd_trend,
+                "forecast_dir": s.forecast_dir
+            } for s in strong_signals
+        ]
+    }
+    
+    with open("signals.json", "w", encoding="utf-8") as f:
+        json.dump(web_data, f, indent=2, ensure_ascii=False)
+    logger.info("Fichier signals.json mis à jour pour le site web.")
+    
     if strong_signals:
         logger.info(f"Envoi de {len(strong_signals)} signaux forts sur Telegram...")
         for s in strong_signals:
