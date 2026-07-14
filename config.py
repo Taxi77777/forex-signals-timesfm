@@ -11,8 +11,9 @@ load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 
-# ─── Paires Forex majeures ─────────────────────────────────────────────────────
+# ─── Paires Forex (majeures + mineures + exotiques) ───────────────────────────
 FOREX_PAIRS = [
+    # ── Majeures ──────────────────────────────────────────────────────────────
     "EURUSD=X",   # EUR/USD
     "GBPUSD=X",   # GBP/USD
     "JPY=X",      # USD/JPY
@@ -20,9 +21,41 @@ FOREX_PAIRS = [
     "CAD=X",      # USD/CAD
     "CHF=X",      # USD/CHF
     "NZDUSD=X",   # NZD/USD
+    # ── Croisées EUR ──────────────────────────────────────────────────────────
+    "EURGBP=X",   # EUR/GBP
+    "EURJPY=X",   # EUR/JPY
+    "EURAUD=X",   # EUR/AUD
+    "EURCAD=X",   # EUR/CAD
+    "EURCHF=X",   # EUR/CHF
+    "EURNZD=X",   # EUR/NZD
+    # ── Croisées GBP ──────────────────────────────────────────────────────────
+    "GBPJPY=X",   # GBP/JPY
+    "GBPAUD=X",   # GBP/AUD
+    "GBPCAD=X",   # GBP/CAD
+    "GBPCHF=X",   # GBP/CHF
+    "GBPNZD=X",   # GBP/NZD
+    # ── Croisées AUD ──────────────────────────────────────────────────────────
+    "AUDJPY=X",   # AUD/JPY
+    "AUDCAD=X",   # AUD/CAD
+    "AUDCHF=X",   # AUD/CHF
+    "AUDNZD=X",   # AUD/NZD
+    # ── Croisées NZD / CAD / CHF ──────────────────────────────────────────────
+    "NZDJPY=X",   # NZD/JPY
+    "CADJPY=X",   # CAD/JPY
+    "CHFJPY=X",   # CHF/JPY
+    # ── Exotiques ─────────────────────────────────────────────────────────────
+    "MXN=X",      # USD/MXN
+    "USDTRY=X",   # USD/TRY
+    "USDZAR=X",   # USD/ZAR
+    "USDSEK=X",   # USD/SEK
+    "USDNOK=X",   # USD/NOK
+    "USDDKK=X",   # USD/DKK
+    "USDSGD=X",   # USD/SGD
+    "USDHKD=X",   # USD/HKD
 ]
 
 PAIR_NAMES = {
+    # Majeures
     "EURUSD=X": "EUR/USD",
     "GBPUSD=X": "GBP/USD",
     "JPY=X":    "USD/JPY",
@@ -30,6 +63,37 @@ PAIR_NAMES = {
     "CAD=X":    "USD/CAD",
     "CHF=X":    "USD/CHF",
     "NZDUSD=X": "NZD/USD",
+    # Croisées EUR
+    "EURGBP=X": "EUR/GBP",
+    "EURJPY=X": "EUR/JPY",
+    "EURAUD=X": "EUR/AUD",
+    "EURCAD=X": "EUR/CAD",
+    "EURCHF=X": "EUR/CHF",
+    "EURNZD=X": "EUR/NZD",
+    # Croisées GBP
+    "GBPJPY=X": "GBP/JPY",
+    "GBPAUD=X": "GBP/AUD",
+    "GBPCAD=X": "GBP/CAD",
+    "GBPCHF=X": "GBP/CHF",
+    "GBPNZD=X": "GBP/NZD",
+    # Croisées AUD
+    "AUDJPY=X": "AUD/JPY",
+    "AUDCAD=X": "AUD/CAD",
+    "AUDCHF=X": "AUD/CHF",
+    "AUDNZD=X": "AUD/NZD",
+    # Croisées NZD / CAD / CHF
+    "NZDJPY=X": "NZD/JPY",
+    "CADJPY=X": "CAD/JPY",
+    "CHFJPY=X": "CHF/JPY",
+    # Exotiques
+    "MXN=X":    "USD/MXN",
+    "USDTRY=X": "USD/TRY",
+    "USDZAR=X": "USD/ZAR",
+    "USDSEK=X": "USD/SEK",
+    "USDNOK=X": "USD/NOK",
+    "USDDKK=X": "USD/DKK",
+    "USDSGD=X": "USD/SGD",
+    "USDHKD=X": "USD/HKD",
 }
 
 # ─── Données ───────────────────────────────────────────────────────────────────

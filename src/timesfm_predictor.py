@@ -20,31 +20,55 @@ def _load_model():
         return _model
 
     if not config.USE_TIMESFM:
-        logger.info("ℹ️  TimesFM désactivé — utilisation du fallback statistique")
+        logger.info("TimesFM désactivé — utilisation du fallback statistique")
         return None
 
     try:
         import timesfm
 
-        logger.info("⏳ Chargement du modèle TimesFM (peut prendre 1-2 min la 1ère fois)…")
-        _model = timesfm.TimesFm(
-            hparams=timesfm.TimesFmHparams(
-                backend=config.TIMESFM_BACKEND,
-                per_core_batch_size=32,
-                horizon_len=config.FORECAST_HORIZON,
-            ),
-            checkpoint=timesfm.TimesFmCheckpoint(
-                huggingface_repo_id=config.TIMESFM_MODEL_ID
-            ),
-        )
-        logger.info("✅ Modèle TimesFM chargé avec succès !")
+        logger.info("Chargement du modèle TimesFM (peut prendre 1-2 min la 1ere fois)...")
+
+        # Support TimesFM v1 et v2 (API différente)
+        if hasattr(timesfm, "TimesFm"):
+            # v1.x API
+            _model = timesfm.TimesFm(
+                hparams=timesfm.TimesFmHparams(
+                    backend=config.TIMESFM_BACKEND,
+                    per_core_batch_size=32,
+                    horizon_len=config.FORECAST_HORIZON,
+                ),
+                checkpoint=timesfm.TimesFmCheckpoint(
+                    huggingface_repo_id="google/timesfm-1.0-200m-pytorch"
+                ),
+            )
+        elif hasattr(timesfm, "TimesFM"):
+            # v2.x API (classe renommée TimesFM)
+            _model = timesfm.TimesFM(
+                hparams=timesfm.TimesFmHparams(
+                    backend=config.TIMESFM_BACKEND,
+                    per_core_batch_size=32,
+                    horizon_len=config.FORECAST_HORIZON,
+                ),
+                checkpoint=timesfm.TimesFmCheckpoint(
+                    huggingface_repo_id="google/timesfm-2.0-200m-pytorch"
+                ),
+            )
+        else:
+            # Tentative générique
+            cls = getattr(timesfm, list(filter(lambda x: "times" in x.lower(), dir(timesfm)))[0])
+            _model = cls(
+                hparams=timesfm.TimesFmHparams(backend=config.TIMESFM_BACKEND, per_core_batch_size=32, horizon_len=config.FORECAST_HORIZON),
+                checkpoint=timesfm.TimesFmCheckpoint(huggingface_repo_id="google/timesfm-2.0-200m-pytorch"),
+            )
+
+        logger.info("Modele TimesFM charge avec succes !")
         return _model
 
     except ImportError:
-        logger.warning("⚠️  Package 'timesfm' non installé — fallback activé")
+        logger.warning("Package 'timesfm' non installe — fallback active")
         return None
     except Exception as e:
-        logger.error(f"❌ Erreur chargement TimesFM: {e} — fallback activé")
+        logger.error(f"Erreur chargement TimesFM: {e} — fallback active")
         return None
 
 
