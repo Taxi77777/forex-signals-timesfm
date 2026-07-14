@@ -15,6 +15,7 @@
             --card-bg: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.08);
             --primary: #6366f1;
+            --primary-hover: #4f46e5;
             --success: #10b981;
             --danger: #ef4444;
             --text-color: #f3f4f6;
@@ -91,6 +92,8 @@
             border-radius: 16px;
             margin-bottom: 2.5rem;
             backdrop-filter: blur(8px);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .status-item {
@@ -114,6 +117,51 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
+        /* Scan Button and Actions */
+        .actions-group {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:disabled {
+            background-color: #374151;
+            color: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Signals Grid */
         .signals-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -288,13 +336,60 @@
             margin-bottom: 1.5rem;
         }
 
-        .no-signals h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
+        /* Modal Settings */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(8px);
         }
 
-        .no-signals p {
+        .modal-content {
+            background: #111827;
+            border: 1px solid var(--card-border);
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            color: white;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-content p {
             color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: white;
+            font-family: monospace;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
         }
 
         footer {
@@ -304,11 +399,6 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--card-border);
             margin-top: 5rem;
-        }
-
-        footer a {
-            color: var(--primary);
-            text-decoration: none;
         }
     </style>
 </head>
@@ -327,11 +417,21 @@
         <div class="status-bar">
             <div class="status-item">
                 <div class="status-dot"></div>
-                <span>Mise à jour horaire active</span>
+                <span id="system-status">Mise à jour horaire active</span>
             </div>
-            <div class="status-item">
-                <span style="color: var(--text-muted)">Dernier scan :</span>
-                <strong id="last-update">-</strong>
+            
+            <div class="actions-group">
+                <span style="color: var(--text-muted); margin-right: 1rem;">
+                    Dernier scan : <strong id="last-update" style="color: white;">-</strong>
+                </span>
+                
+                <button class="btn btn-secondary" onclick="openTokenModal()">
+                    <i class="fa-solid fa-key"></i> Clé GitHub
+                </button>
+                
+                <button class="btn" id="btn-scan" onclick="triggerScan()">
+                    <i class="fa-solid fa-rotate"></i> Lancer un scan
+                </button>
             </div>
         </div>
 
@@ -339,7 +439,22 @@
         <div class="signals-grid" id="signals-container">
             <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
                 <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--primary)"></i>
-                <p style="margin-top: 1rem; color: var(--text-muted)">Chargement des signaux en cours...</p>
+                <p style="margin-top: 1rem; color: var(--text-muted)">Chargement des signaux...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Configuration Token -->
+    <div class="modal" id="token-modal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-shield-halved" style="color: var(--primary)"></i> Configuration Sécurisée</h3>
+            <p>
+                Pour lancer un scan à la demande, colle ton jeton GitHub (Personal Access Token). Il sera sauvegardé uniquement dans ton navigateur.
+            </p>
+            <input type="password" id="gh-token" placeholder="ghp_...">
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeTokenModal()">Annuler</button>
+                <button class="btn" onclick="saveToken()">Sauvegarder</button>
             </div>
         </div>
     </div>
@@ -350,7 +465,11 @@
     </footer>
 
     <script>
-        // Fonction pour formater la date
+        const OWNER = "Taxi77777";
+        const REPO = "forex-signals-timesfm";
+        const WORKFLOW_FILE = "forex_signals.yml";
+
+        // Formater la date
         function formatDate(dateStr) {
             if (!dateStr) return "-";
             const date = new Date(dateStr);
@@ -363,29 +482,27 @@
             }) + " (Paris)";
         }
 
-        // Récupérer et afficher les signaux
+        // Charger signaux
         async function loadSignals() {
             const container = document.getElementById('signals-container');
             const lastUpdateElem = document.getElementById('last-update');
             
             try {
-                // Charger le fichier JSON généré par GitHub Actions
-                // Version avec anti-cache pour toujours avoir le dernier fichier
                 const response = await fetch('signals.json?t=' + new Date().getTime());
-                if (!response.ok) throw new Error("Fichier introuvable");
-                
+                if (!response.ok) throw new Error();
                 const data = await response.json();
                 
                 lastUpdateElem.innerText = formatDate(data.last_update);
-                
                 const strongSignals = data.signals || [];
                 
                 if (strongSignals.length === 0) {
                     container.innerHTML = `
                         <div class="no-signals">
                             <i class="fa-solid fa-square-minus"></i>
-                            <h3>Aucun signal fort détecté</h3>
-                            <p>L'IA de Google n'a détecté aucune opportunité forte (Confiance &ge; 70%) sur les 37 devises lors de la dernière heure.</p>
+                            <h3 style="margin-top: 1rem">Aucun signal fort détecté</h3>
+                            <p style="color: var(--text-muted); margin-top: 0.5rem">
+                                L'IA n'a détecté aucun signal fort (Confiance &ge; 70%) sur les 37 devises lors de la dernière analyse.
+                            </p>
                         </div>
                     `;
                     return;
@@ -448,21 +565,101 @@
                         </div>
                     `;
                 });
-                
                 container.innerHTML = cardsHtml;
-                
             } catch (err) {
-                console.error(err);
                 container.innerHTML = `
                     <div class="no-signals" style="border-color: var(--danger)">
-                        <i class="fa-solid fa-circle-exclamation" style="color: var(--danger)"></i>
-                        <h3>Erreur de chargement</h3>
-                        <p>Impossible de lire les signaux. Le premier scan de GitHub Actions doit se terminer.</p>
+                        <i class="fa-solid fa-triangle-exclamation" style="color: var(--danger)"></i>
+                        <h3 style="margin-top: 1rem">Pas encore de données</h3>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem">
+                            Le premier scan est en cours de génération.
+                        </p>
                     </div>
                 `;
             }
         }
-        
+
+        // Token Modal Actions
+        function openTokenModal() {
+            document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
+            document.getElementById('token-modal').style.display = 'flex';
+        }
+        function closeTokenModal() {
+            document.getElementById('token-modal').style.display = 'none';
+        }
+        function saveToken() {
+            const token = document.getElementById('gh-token').value.trim();
+            if (token) {
+                localStorage.setItem('gh_token', token);
+                alert("Jeton sauvegardé avec succès !");
+            } else {
+                localStorage.removeItem('gh_token');
+                alert("Jeton supprimé.");
+            }
+            closeTokenModal();
+        }
+
+        // Lancer un Scan à la demande
+        async function triggerScan() {
+            const token = localStorage.getItem('gh_token');
+            if (!token) {
+                openTokenModal();
+                return;
+            }
+
+            const btn = document.getElementById('btn-scan');
+            const statusText = document.getElementById('system-status');
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Demande en cours...`;
+            statusText.innerText = "Démarrage des serveurs...";
+
+            try {
+                // Déclencher le workflow via l'API GitHub
+                const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ref: 'main' })
+                });
+
+                if (res.status === 204) {
+                    // Attente et suivi du scan
+                    let countdown = 120; // 2 minutes
+                    statusText.innerText = `Scan IA en cours (Attente ~120s)`;
+                    
+                    const interval = setInterval(async () => {
+                        countdown -= 5;
+                        if (countdown <= 0) {
+                            clearInterval(interval);
+                            btn.disabled = false;
+                            btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Lancer un scan`;
+                            statusText.innerText = "Mise à jour horaire active";
+                            loadSignals();
+                        } else {
+                            statusText.innerText = `Calcul des prédictions (Reste ~${countdown}s)`;
+                            // Recharger les signaux à la moitié du temps pour voir si c'est fini plus vite
+                            if (countdown === 60 || countdown === 30) {
+                                loadSignals();
+                            }
+                        }
+                    }, 5000);
+                } else {
+                    const errData = await res.json();
+                    throw new Error(errData.message || "Erreur de connexion");
+                }
+            } catch (err) {
+                alert("Erreur lors du lancement du scan. Vérifie ton jeton GitHub.\nDétail : " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-rotate"></i> Lancer un scan`;
+                statusText.innerText = "Mise à jour horaire active";
+            }
+        }
+
+        // Chargement initial
         loadSignals();
     </script>
 </body>
