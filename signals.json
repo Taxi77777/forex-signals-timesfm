@@ -1,47 +1,58 @@
 {
-  "last_update": "2026-07-14T21:55:08.704419+00:00",
+  "last_update": "2026-07-14T22:54:33.187389+00:00",
   "signals": [
+    {
+      "pair_name": "GBP/USD",
+      "signal": "BUY",
+      "current_price": 1.33912,
+      "take_profit": 1.34131,
+      "stop_loss": 1.33766,
+      "confidence": 75,
+      "rsi": 54.4,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
     {
       "pair_name": "USD/JPY",
       "signal": "BUY",
-      "current_price": 162.202,
-      "take_profit": 162.43914,
-      "stop_loss": 162.0439,
-      "confidence": 87,
-      "rsi": 50.8,
+      "current_price": 162.23801,
+      "take_profit": 162.46978,
+      "stop_loss": 162.08349,
+      "confidence": 77,
+      "rsi": 52.9,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
-      "pair_name": "AUD/CAD",
-      "signal": "BUY",
-      "current_price": 0.98004,
-      "take_profit": 0.98284,
-      "stop_loss": 0.97817,
-      "confidence": 71,
-      "rsi": 47.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "CAD/JPY",
-      "signal": "BUY",
-      "current_price": 115.302,
-      "take_profit": 115.48357,
-      "stop_loss": 115.18095,
-      "confidence": 75,
-      "rsi": 69.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "USD/NOK",
+      "pair_name": "USD/CHF",
       "signal": "SELL",
-      "current_price": 9.67261,
-      "take_profit": 9.64082,
-      "stop_loss": 9.6938,
+      "current_price": 0.80938,
+      "take_profit": 0.80732,
+      "stop_loss": 0.81076,
       "confidence": 85,
-      "rsi": 32.6,
+      "rsi": 43.4,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "SELL"
+    },
+    {
+      "pair_name": "GBP/JPY",
+      "signal": "BUY",
+      "current_price": 217.233,
+      "take_profit": 217.57142,
+      "stop_loss": 217.00739,
+      "confidence": 75,
+      "rsi": 59.3,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "USD/ZAR",
+      "signal": "SELL",
+      "current_price": 16.36952,
+      "take_profit": 16.29968,
+      "stop_loss": 16.41608,
+      "confidence": 85,
+      "rsi": 44.0,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "SELL"
     }
