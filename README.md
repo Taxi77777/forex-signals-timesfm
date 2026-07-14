@@ -103,6 +103,16 @@ Tendance IA: Hausse sur 4h
 
 ---
 
+## 🤖 Mode Interactif Telegram
+
+Si le bot est lancé en mode interactif (`python interactive_bot.py`), tu peux lui parler en direct sur Telegram :
+
+- `/start` : Message d'accueil et aide.
+- `/liste` : Affiche les 37 devises disponibles.
+- `/predit [PAIRE]` : Lance une prédiction TimesFM immédiate (ex: `/predit EURUSD` ou `/predit gbp/usd`).
+
+---
+
 ## ⚠️ Avertissement
 
 > Ce bot est développé à des fins **éducatives et de recherche**. Les signaux ne constituent pas des conseils financiers. Le trading Forex comporte des risques significatifs de perte en capital. Utilisez toujours votre propre jugement.
