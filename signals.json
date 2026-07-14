@@ -1,27 +1,49 @@
 {
-  "last_update": "2026-07-14T21:01:31.123594+00:00",
+  "last_update": "2026-07-14T21:55:08.704419+00:00",
   "signals": [
     {
       "pair_name": "USD/JPY",
       "signal": "BUY",
-      "current_price": 162.183,
-      "take_profit": 162.42014,
-      "stop_loss": 162.0249,
+      "current_price": 162.202,
+      "take_profit": 162.43914,
+      "stop_loss": 162.0439,
       "confidence": 87,
-      "rsi": 49.6,
+      "rsi": 50.8,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
-      "pair_name": "EUR/AUD",
+      "pair_name": "AUD/CAD",
       "signal": "BUY",
-      "current_price": 1.63658,
-      "take_profit": 1.63926,
-      "stop_loss": 1.63479,
-      "confidence": 70,
-      "rsi": 28.0,
-      "macd_trend": "Baissier ↓ 🔴",
+      "current_price": 0.98004,
+      "take_profit": 0.98284,
+      "stop_loss": 0.97817,
+      "confidence": 71,
+      "rsi": 47.3,
+      "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "CAD/JPY",
+      "signal": "BUY",
+      "current_price": 115.302,
+      "take_profit": 115.48357,
+      "stop_loss": 115.18095,
+      "confidence": 75,
+      "rsi": 69.3,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "USD/NOK",
+      "signal": "SELL",
+      "current_price": 9.67261,
+      "take_profit": 9.64082,
+      "stop_loss": 9.6938,
+      "confidence": 85,
+      "rsi": 32.6,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "SELL"
     }
   ]
 }
