@@ -13,13 +13,20 @@ from datetime import datetime
 # ─── Configuration du logging ───────────────────────────────────────────────────
 os.makedirs("logs", exist_ok=True)
 
+import io
+
+# Handler console UTF-8 (fix emojis sur Windows)
+console_handler = logging.StreamHandler(
+    io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+)
+console_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s - %(message)s"))
+
+file_handler = logging.FileHandler("logs/signals.log", encoding="utf-8")
+file_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s - %(message)s"))
+
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler("logs/signals.log", encoding="utf-8"),
-    ],
+    handlers=[console_handler, file_handler],
 )
 logger = logging.getLogger(__name__)
 
