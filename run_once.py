@@ -79,8 +79,15 @@ def main():
             if df_ind.empty:
                 continue
             price_series = prepare_timesfm_input(df)
-            predictions  = predict_timesfm(price_series)
-            signal = generate_signal(symbol, df_ind, predictions)
+            
+            # Prédictions Google TimesFM
+            tfm_predictions = predict_timesfm(price_series)
+            
+            # Prédictions Amazon Chronos
+            from src.chronos_predictor import predict_chronos
+            chronos_predictions = predict_chronos(price_series)
+            
+            signal = generate_signal(symbol, df_ind, tfm_predictions, chronos_predictions)
             if signal:
                 signals.append(signal)
         except Exception as e:

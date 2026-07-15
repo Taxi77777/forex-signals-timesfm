@@ -40,22 +40,16 @@ class TradingSignal:
 def generate_signal(
     symbol: str,
     df_with_indicators,
-    predictions: np.ndarray | None,
+    timesfm_predictions: np.ndarray | None,
+    chronos_predictions: np.ndarray | None,
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
     - Indicateurs techniques (RSI, MACD, EMA, BB)
-    - Prédictions TimesFM
-
-    Système de vote : chaque indicateur vote BUY(+1) / SELL(-1) / HOLD(0)
+    - Prédictions Google TimesFM
+    - Prédictions Amazon Chronos
     
-    Args:
-        symbol:                Symbole Yahoo Finance
-        df_with_indicators:    DataFrame avec indicateurs calculés
-        predictions:           Array de prédictions TimesFM
-    
-    Returns:
-        TradingSignal ou None si données insuffisantes
+    Système de vote pondéré et filtre de double consensus strict.
     """
     if df_with_indicators is None or df_with_indicators.empty:
         logger.warning(f"⚠️  {symbol}: données insuffisantes pour générer un signal")
@@ -70,9 +64,9 @@ def generate_signal(
 
     # ── RSI ──────────────────────────────────────────────────────────────────
     if ind["rsi"] < config.RSI_OVERSOLD:
-        votes.append(("BUY",  2))   # survente → potentiel rebond
+        votes.append(("BUY",  2))   # survente
     elif ind["rsi"] > config.RSI_OVERBOUGHT:
-        votes.append(("SELL", 2))   # surachat → potentiel retournement
+        votes.append(("SELL", 2))   # surachat
     else:
         votes.append(("HOLD", 1))
 
@@ -102,11 +96,22 @@ def generate_signal(
     elif ind["stoch_k"] > 80:
         votes.append(("SELL", 1))
 
-    # ── TimesFM (poids double) ────────────────────────────────────────────────
-    forecast = get_forecast_direction(current_price, predictions)
-    if forecast["direction"] == "BUY":
+    # ── TimesFM (poids triple) ────────────────────────────────────────────────
+    forecast = get_forecast_direction(current_price, timesfm_predictions)
+    timesfm_dir = forecast["direction"]
+    if timesfm_dir == "BUY":
         votes.append(("BUY",  3))
-    elif forecast["direction"] == "SELL":
+    elif timesfm_dir == "SELL":
+        votes.append(("SELL", 3))
+    else:
+        votes.append(("HOLD", 1))
+
+    # ── Amazon Chronos (poids triple) ─────────────────────────────────────────
+    from src.chronos_predictor import get_chronos_direction, predict_chronos
+    chronos_dir = get_chronos_direction(current_price, chronos_predictions)
+    if chronos_dir == "BUY":
+        votes.append(("BUY",  3))
+    elif chronos_dir == "SELL":
         votes.append(("SELL", 3))
     else:
         votes.append(("HOLD", 1))
@@ -125,6 +130,18 @@ def generate_signal(
     else:
         final_signal = "HOLD"
         confidence = 50
+
+    # ─── FILTRE DE DOUBLE CONSENSUS STRICT ─────────────────────────────────────
+    # Si le signal final est un BUY ou un SELL, il faut impérativement que
+    # Google TimesFM ET Amazon Chronos soient d'accord sur cette direction.
+    if final_signal in ["BUY", "SELL"]:
+        if timesfm_dir != chronos_dir:
+            logger.info(
+                f"⚖️ Désaccord IA sur {pair_name} (TimesFM: {timesfm_dir} vs Chronos: {chronos_dir}) "
+                f"→ Signal filtré et forcé à HOLD pour sécurité"
+            )
+            final_signal = "HOLD"
+            confidence = 50
 
     # Ignorer les signaux sous le seuil minimum
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
@@ -161,14 +178,14 @@ def generate_signal(
         ema_trend=     ind["ema_trend"],
         bb_position=   ind["bb_position"],
         atr=           round(atr, 5),
-        forecast_dir=  forecast["direction"],
+        forecast_dir=  f"TFM:{timesfm_dir}/CHO:{chronos_dir}",
         forecast_4h=   forecast.get("target_4h", current_price),
         forecast_24h=  forecast.get("target_24h", current_price),
-        is_strong=     confidence >= config.STRONG_SIGNAL,
+        is_strong=     confidence >= config.STRONG_SIGNAL and final_signal != "HOLD",
     )
 
     logger.info(
         f"📊 {pair_name}: {final_signal} | Confiance: {confidence}% "
-        f"| RSI: {ind['rsi']:.1f} | MACD: {ind['macd_hist']:.6f}"
+        f"| RSI: {ind['rsi']:.1f} | TFM: {timesfm_dir} | CHO: {chronos_dir}"
     )
     return signal
