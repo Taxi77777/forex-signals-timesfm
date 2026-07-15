@@ -1,71 +1,27 @@
 {
-  "last_update": "2026-07-15T01:56:48.314590+00:00",
+  "last_update": "2026-07-15T04:49:52.374310+00:00",
   "signals": [
-    {
-      "pair_name": "EUR/USD",
-      "signal": "BUY",
-      "current_price": 1.14364,
-      "take_profit": 1.14519,
-      "stop_loss": 1.14261,
-      "confidence": 75,
-      "rsi": 59.8,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "GBP/USD",
-      "signal": "BUY",
-      "current_price": 1.34016,
-      "take_profit": 1.34213,
-      "stop_loss": 1.33884,
-      "confidence": 75,
-      "rsi": 58.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "USD/CHF",
-      "signal": "SELL",
-      "current_price": 0.80869,
-      "take_profit": 0.80682,
-      "stop_loss": 0.80994,
-      "confidence": 85,
-      "rsi": 40.6,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "SELL"
-    },
     {
       "pair_name": "EUR/CAD",
       "signal": "BUY",
-      "current_price": 1.60603,
-      "take_profit": 1.6086,
-      "stop_loss": 1.60432,
+      "current_price": 1.60675,
+      "take_profit": 1.60906,
+      "stop_loss": 1.60521,
       "confidence": 75,
-      "rsi": 38.0,
+      "rsi": 43.4,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
-      "pair_name": "EUR/CHF",
+      "pair_name": "USD/DKK",
       "signal": "SELL",
-      "current_price": 0.92462,
-      "take_profit": 0.9231,
-      "stop_loss": 0.92563,
+      "current_price": 6.53433,
+      "take_profit": 6.52482,
+      "stop_loss": 6.54067,
       "confidence": 75,
-      "rsi": 45.7,
+      "rsi": 37.1,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "SELL"
-    },
-    {
-      "pair_name": "GBP/JPY",
-      "signal": "BUY",
-      "current_price": 217.24899,
-      "take_profit": 217.55878,
-      "stop_loss": 217.04247,
-      "confidence": 87,
-      "rsi": 59.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
     }
   ]
 }
