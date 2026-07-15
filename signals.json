@@ -1,38 +1,93 @@
 {
-  "last_update": "2026-07-15T11:30:26.059625+00:00",
+  "last_update": "2026-07-15T12:55:47.160324+00:00",
   "signals": [
     {
-      "pair_name": "EUR/CAD",
+      "pair_name": "USD/JPY",
       "signal": "BUY",
-      "current_price": 1.60586,
-      "take_profit": 1.60806,
-      "stop_loss": 1.6044,
-      "confidence": 75,
-      "rsi": 43.3,
+      "current_price": 162.211,
+      "take_profit": 162.41469,
+      "stop_loss": 162.0752,
+      "confidence": 87,
+      "rsi": 49.2,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
-      "pair_name": "GBP/JPY",
+      "pair_name": "USD/CAD",
       "signal": "BUY",
-      "current_price": 217.53799,
-      "take_profit": 217.82742,
-      "stop_loss": 217.34504,
+      "current_price": 1.40545,
+      "take_profit": 1.40769,
+      "stop_loss": 1.40396,
       "confidence": 75,
-      "rsi": 64.3,
+      "rsi": 41.6,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "EUR/CAD",
+      "signal": "BUY",
+      "current_price": 1.60584,
+      "take_profit": 1.60811,
+      "stop_loss": 1.60433,
+      "confidence": 75,
+      "rsi": 43.7,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "GBP/NZD",
+      "signal": "BUY",
+      "current_price": 2.30252,
+      "take_profit": 2.30788,
+      "stop_loss": 2.29895,
+      "confidence": 75,
+      "rsi": 44.2,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "AUD/JPY",
+      "signal": "SELL",
+      "current_price": 113.435,
+      "take_profit": 113.25454,
+      "stop_loss": 113.5553,
+      "confidence": 75,
+      "rsi": 71.6,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "HOLD"
     },
     {
       "pair_name": "AUD/NZD",
       "signal": "SELL",
-      "current_price": 1.20006,
-      "take_profit": 1.19776,
-      "stop_loss": 1.2016,
+      "current_price": 1.19945,
+      "take_profit": 1.19714,
+      "stop_loss": 1.20099,
       "confidence": 75,
-      "rsi": 49.2,
+      "rsi": 45.2,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "SELL"
+    },
+    {
+      "pair_name": "USD/MXN",
+      "signal": "BUY",
+      "current_price": 17.3953,
+      "take_profit": 17.43207,
+      "stop_loss": 17.37078,
+      "confidence": 75,
+      "rsi": 37.9,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "USD/ZAR",
+      "signal": "BUY",
+      "current_price": 16.3426,
+      "take_profit": 16.40502,
+      "stop_loss": 16.30099,
+      "confidence": 75,
+      "rsi": 42.5,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
     }
   ]
 }
