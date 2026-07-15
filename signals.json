@@ -1,80 +1,25 @@
 {
-  "last_update": "2026-07-15T18:16:03.464506+00:00",
+  "last_update": "2026-07-15T19:12:15.024513+00:00",
   "signals": [
     {
-      "pair_name": "EUR/AUD",
+      "pair_name": "EUR/GBP",
       "signal": "BUY",
-      "current_price": 1.63518,
-      "take_profit": 1.63771,
-      "stop_loss": 1.63349,
-      "confidence": 81,
-      "rsi": 42.9,
+      "current_price": 0.84716,
+      "take_profit": 0.84788,
+      "stop_loss": 0.84668,
+      "confidence": 80,
+      "rsi": 35.5,
       "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:BUY/CHO:BUY"
-    },
-    {
-      "pair_name": "EUR/CHF",
-      "signal": "SELL",
-      "current_price": 0.92264,
-      "take_profit": 0.92091,
-      "stop_loss": 0.9238,
-      "confidence": 81,
-      "rsi": 34.4,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "TFM:SELL/CHO:SELL"
-    },
-    {
-      "pair_name": "GBP/NZD",
-      "signal": "BUY",
-      "current_price": 2.31269,
-      "take_profit": 2.31916,
-      "stop_loss": 2.30838,
-      "confidence": 72,
-      "rsi": 60.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:BUY/CHO:BUY"
-    },
-    {
-      "pair_name": "AUD/CHF",
-      "signal": "SELL",
-      "current_price": 0.56419,
-      "take_profit": 0.56235,
-      "stop_loss": 0.56541,
-      "confidence": 72,
-      "rsi": 41.6,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "TFM:SELL/CHO:SELL"
-    },
-    {
-      "pair_name": "AUD/NZD",
-      "signal": "SELL",
-      "current_price": 1.19745,
-      "take_profit": 1.19538,
-      "stop_loss": 1.19883,
-      "confidence": 75,
-      "rsi": 33.9,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "TFM:SELL/CHO:SELL"
-    },
-    {
-      "pair_name": "USD/SEK",
-      "signal": "BUY",
-      "current_price": 9.58686,
-      "take_profit": 9.61384,
-      "stop_loss": 9.56887,
-      "confidence": 76,
-      "rsi": 25.6,
-      "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "TFM:BUY/CHO:BUY"
     },
     {
       "pair_name": "USD/DKK",
       "signal": "BUY",
-      "current_price": 6.51531,
-      "take_profit": 6.52606,
-      "stop_loss": 6.50815,
+      "current_price": 6.51524,
+      "take_profit": 6.52173,
+      "stop_loss": 6.51091,
       "confidence": 76,
-      "rsi": 27.9,
+      "rsi": 29.6,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "TFM:BUY/CHO:BUY"
     }
