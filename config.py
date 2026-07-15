@@ -97,9 +97,9 @@ PAIR_NAMES = {
 }
 
 # ─── Données ───────────────────────────────────────────────────────────────────
-DATA_INTERVAL       = os.getenv("DATA_INTERVAL", "1h")         # intervalle des bougies
-DATA_PERIOD         = "60d"                                     # historique à télécharger
-FORECAST_HORIZON    = 24                                        # heures de prédiction
+DATA_INTERVAL       = os.getenv("DATA_INTERVAL", "15m")        # intervalle des bougies (15 min)
+DATA_PERIOD         = "30d"                                     # historique à télécharger (max 30j pour 15m)
+FORECAST_HORIZON    = 4                                         # 4 bougies de 15min = 1h de prédiction
 CONTEXT_LENGTH      = 512                                       # points de contexte TimesFM
 
 # ─── Fréquence des signaux ─────────────────────────────────────────────────────
