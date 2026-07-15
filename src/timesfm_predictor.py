@@ -64,7 +64,8 @@ def predict_timesfm(price_series: np.ndarray) -> Optional[np.ndarray]:
     """
     model = _load_model()
     if model is None:
-        return _fallback_predict(price_series)
+        logger.warning("TimesFM indisponible — aucune prédiction (pas de vote IA, sécurité)")
+        return None
 
     try:
         inputs = [price_series.astype(np.float32)]
@@ -80,33 +81,8 @@ def predict_timesfm(price_series: np.ndarray) -> Optional[np.ndarray]:
         return predictions.astype(np.float64)
 
     except Exception as e:
-        logger.error(f"Erreur prediction TimesFM: {e}")
-        return _fallback_predict(price_series)
-
-
-def _fallback_predict(price_series: np.ndarray) -> np.ndarray:
-    """
-    Prédiction de repli : régression linéaire + momentum récent.
-    Utilisée si TimesFM indisponible.
-    """
-    horizon = config.FORECAST_HORIZON
-    n = len(price_series)
-
-    # Régression linéaire sur les 100 derniers points
-    window = min(100, n)
-    x = np.arange(window)
-    y = price_series[-window:]
-    coeffs = np.polyfit(x, y, deg=1)
-    slope, intercept = coeffs
-
-    # Extrapolation
-    future_x = np.arange(window, window + horizon)
-    predictions = slope * future_x + intercept
-
-    # Bruit léger basé sur volatilité récente
-    np.random.seed(int(price_series[-1] * 1000) % 9999)
-    noise_scale = np.std(np.diff(price_series[-20:])) * 0.3
-    return predictions + np.random.normal(0, noise_scale, size=horizon)
+        logger.error(f"Erreur prediction TimesFM: {e} — aucune prédiction (pas de vote IA)")
+        return None
 
 
 def get_forecast_direction(current_price: float, predictions: np.ndarray) -> dict:
@@ -137,8 +113,8 @@ def get_forecast_direction(current_price: float, predictions: np.ndarray) -> dic
     variation_24h = (target_24h - current_price) / current_price * 100
 
     direction = (
-        "BUY"  if variation_4h > 0.01
-        else "SELL" if variation_4h < -0.01
+        "BUY"  if variation_4h > 0.05
+        else "SELL" if variation_4h < -0.05
         else "HOLD"
     )
 
