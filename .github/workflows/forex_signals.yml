@@ -2,7 +2,7 @@ name: Forex Signals Bot — Toutes les heures
 
 on:
   schedule:
-    - cron: '0 * * * *'   # Chaque heure pile (00 min de chaque heure)
+    - cron: '0,30 * * * *'   # Toutes les 30 minutes (XX:00 et XX:30)
   workflow_dispatch:        # Bouton "Run" manuel depuis GitHub
 
 jobs:

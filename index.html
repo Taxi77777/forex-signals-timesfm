@@ -666,15 +666,16 @@
             }
         }
 
-        // ── Compte à rebours vers le prochain scan horaire ──────────────────
+        // ── Compte à rebours vers le prochain scan (toutes les 30 min) ─────────
         function updateNextScanCountdown() {
             const now = new Date();
-            // Le scan tourne à la minute 0 de chaque heure (cron: 0 * * * *)
-            // GitHub Actions démarre avec ~1-2 min de délai, donc on affiche heure+2min
+            // Le scan tourne à XX:00 et XX:30 + ~2min de délai GitHub Actions
+            const minutes = now.getMinutes();
             const nextScan = new Date(now);
-            nextScan.setMinutes(2, 0, 0); // XX:02:00
-            if (nextScan <= now) {
-                nextScan.setHours(nextScan.getHours() + 1);
+            if (minutes < 32) {
+                nextScan.setMinutes(32, 0, 0); // vers le scan de XX:30
+            } else {
+                nextScan.setMinutes(62, 0, 0); // vers le scan de l'heure suivante
             }
             const diff = Math.floor((nextScan - now) / 1000);
             const m = Math.floor(diff / 60).toString().padStart(2, '0');
