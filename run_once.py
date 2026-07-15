@@ -130,6 +130,15 @@ def main():
         logger.info(f"OK — {len(strong_signals)} signaux forts envoyés !")
     else:
         logger.info("Aucun signal fort détecté pour cette heure-ci.")
+        # Heartbeat : confirme que le bot tourne même sans signal
+        from src.telegram_bot import send_message
+        send_message(
+            f"🔍 *Scan Forex terminé*\n"
+            f"📊 {len(all_data)} paires analysées\n"
+            f"🤖 {len(signals)} signaux évalués — 0 signal fort\n"
+            f"⚖️ Filtre double consensus IA actif\n"
+            f"_Prochain scan dans 30 min_"
+        )
 
     logger.info("=== Analyse terminée ===")
 
