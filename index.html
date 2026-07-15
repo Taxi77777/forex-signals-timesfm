@@ -425,8 +425,11 @@
             </div>
             
             <div class="actions-group">
-                <span style="color: var(--text-muted); margin-right: 1rem;">
+                <span style="color: var(--text-muted); margin-right: 1rem; font-size: 0.85rem;">
                     Dernier scan : <strong id="last-update" style="color: white;">-</strong>
+                </span>
+                <span style="color: var(--text-muted); margin-right: 1rem; font-size: 0.85rem;">
+                    Prochain scan : <strong id="next-scan" style="color: var(--primary);">--:--</strong>
                 </span>
                 
                 <button class="btn" id="btn-scan" onclick="triggerScan()">
@@ -662,6 +665,33 @@
                 statusText.innerText = "Mise à jour horaire active";
             }
         }
+
+        // ── Compte à rebours vers le prochain scan horaire ──────────────────
+        function updateNextScanCountdown() {
+            const now = new Date();
+            // Le scan tourne à la minute 0 de chaque heure (cron: 0 * * * *)
+            // GitHub Actions démarre avec ~1-2 min de délai, donc on affiche heure+2min
+            const nextScan = new Date(now);
+            nextScan.setMinutes(2, 0, 0); // XX:02:00
+            if (nextScan <= now) {
+                nextScan.setHours(nextScan.getHours() + 1);
+            }
+            const diff = Math.floor((nextScan - now) / 1000);
+            const m = Math.floor(diff / 60).toString().padStart(2, '0');
+            const s = (diff % 60).toString().padStart(2, '0');
+            const el = document.getElementById('next-scan');
+            if (el) el.innerText = `${m}m ${s}s`;
+        }
+        setInterval(updateNextScanCountdown, 1000);
+        updateNextScanCountdown();
+
+        // ── Auto-rafraîchissement silencieux toutes les 5 minutes ─────────────
+        setInterval(async () => {
+            const btn = document.getElementById('btn-scan');
+            // Ne pas rafraîchir si un scan manuel est en cours
+            if (btn && btn.disabled) return;
+            await loadSignals();
+        }, 5 * 60 * 1000);
 
         // Chargement initial
         loadSignals();
