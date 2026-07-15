@@ -1,27 +1,16 @@
 {
-  "last_update": "2026-07-15T04:49:52.374310+00:00",
+  "last_update": "2026-07-15T06:16:48.704608+00:00",
   "signals": [
     {
-      "pair_name": "EUR/CAD",
+      "pair_name": "USD/JPY",
       "signal": "BUY",
-      "current_price": 1.60675,
-      "take_profit": 1.60906,
-      "stop_loss": 1.60521,
-      "confidence": 75,
-      "rsi": 43.4,
+      "current_price": 162.187,
+      "take_profit": 162.3831,
+      "stop_loss": 162.05626,
+      "confidence": 87,
+      "rsi": 50.9,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "USD/DKK",
-      "signal": "SELL",
-      "current_price": 6.53433,
-      "take_profit": 6.52482,
-      "stop_loss": 6.54067,
-      "confidence": 75,
-      "rsi": 37.1,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "SELL"
     }
   ]
 }
