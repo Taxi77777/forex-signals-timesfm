@@ -7,6 +7,12 @@ import logging
 import os
 import sys
 
+# Forcer l'encodage utf-8 pour éviter les erreurs d'affichage d'emojis sous Windows
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+except AttributeError:
+    pass
+
 os.makedirs("logs", exist_ok=True)
 
 logging.basicConfig(
@@ -43,10 +49,31 @@ def main():
         logger.error("Aucune donnée récupérée")
         sys.exit(1)
 
+    # Récupérer les devises bloquées par le calendrier économique
+    from src.economic_calendar import get_blocked_currencies
+    blocked_currencies = get_blocked_currencies(window_minutes=60)
+    logger.info(f"Devises actuellement bloquées par les annonces écon.: {blocked_currencies}")
+
     # Analyse de chaque paire
     signals = []
     for symbol, df in all_data.items():
         pair_name = config.PAIR_NAMES.get(symbol, symbol)
+        
+        # Extraire les devises impliquées dans la paire
+        clean_sym = symbol.replace("=X", "")
+        currencies = [clean_sym[:3], clean_sym[3:]] if len(clean_sym) == 6 else ["USD", clean_sym]
+        
+        # Vérifier si l'une des devises est bloquée par le calendrier économique
+        is_blocked = False
+        for cur in currencies:
+            if cur.upper() in blocked_currencies:
+                logger.info(f"🚫 Analyse suspendue pour {pair_name} : la devise {cur} est impactée par une annonce économique forte.")
+                is_blocked = True
+                break
+                
+        if is_blocked:
+            continue
+
         try:
             df_ind = compute_all_indicators(df)
             if df_ind.empty:
