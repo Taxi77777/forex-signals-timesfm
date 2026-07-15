@@ -1,36 +1,36 @@
 {
-  "last_update": "2026-07-15T07:13:19.205635+00:00",
+  "last_update": "2026-07-15T09:58:56.010876+00:00",
   "signals": [
     {
-      "pair_name": "USD/CAD",
+      "pair_name": "EUR/CAD",
       "signal": "BUY",
-      "current_price": 1.40439,
-      "take_profit": 1.40665,
-      "stop_loss": 1.40289,
+      "current_price": 1.60508,
+      "take_profit": 1.6074,
+      "stop_loss": 1.60353,
       "confidence": 75,
-      "rsi": 34.6,
+      "rsi": 37.6,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "BUY"
+    },
+    {
+      "pair_name": "GBP/JPY",
+      "signal": "BUY",
+      "current_price": 217.41,
+      "take_profit": 217.69956,
+      "stop_loss": 217.21697,
+      "confidence": 75,
+      "rsi": 59.3,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "BUY"
     },
     {
       "pair_name": "AUD/JPY",
       "signal": "SELL",
-      "current_price": 113.381,
-      "take_profit": 113.19689,
-      "stop_loss": 113.50373,
+      "current_price": 113.414,
+      "take_profit": 113.23313,
+      "stop_loss": 113.53458,
       "confidence": 75,
-      "rsi": 73.0,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "HOLD"
-    },
-    {
-      "pair_name": "CAD/JPY",
-      "signal": "SELL",
-      "current_price": 115.504,
-      "take_profit": 115.34302,
-      "stop_loss": 115.61131,
-      "confidence": 75,
-      "rsi": 70.3,
+      "rsi": 74.1,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "HOLD"
     }
