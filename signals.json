@@ -1,115 +1,82 @@
 {
-  "last_update": "2026-07-15T17:49:36.311661+00:00",
+  "last_update": "2026-07-15T18:16:03.464506+00:00",
   "signals": [
     {
-      "pair_name": "EUR/USD",
-      "signal": "SELL",
-      "current_price": 1.14758,
-      "take_profit": 1.14582,
-      "stop_loss": 1.14875,
-      "confidence": 70,
-      "rsi": 73.4,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "SELL"
-    },
-    {
-      "pair_name": "AUD/USD",
-      "signal": "SELL",
-      "current_price": 0.70175,
-      "take_profit": 0.70046,
-      "stop_loss": 0.70262,
-      "confidence": 70,
-      "rsi": 72.9,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "SELL"
-    },
-    {
-      "pair_name": "USD/CAD",
+      "pair_name": "EUR/AUD",
       "signal": "BUY",
-      "current_price": 1.40331,
-      "take_profit": 1.40571,
-      "stop_loss": 1.40171,
-      "confidence": 77,
-      "rsi": 34.9,
+      "current_price": 1.63518,
+      "take_profit": 1.63771,
+      "stop_loss": 1.63349,
+      "confidence": 81,
+      "rsi": 42.9,
       "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "EUR/GBP",
-      "signal": "BUY",
-      "current_price": 0.84696,
-      "take_profit": 0.84849,
-      "stop_loss": 0.84594,
-      "confidence": 70,
-      "rsi": 24.8,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "EUR/JPY",
-      "signal": "SELL",
-      "current_price": 185.849,
-      "take_profit": 185.60644,
-      "stop_loss": 186.01071,
-      "confidence": 70,
-      "rsi": 72.1,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "SELL"
+      "forecast_dir": "TFM:BUY/CHO:BUY"
     },
     {
       "pair_name": "EUR/CHF",
       "signal": "SELL",
-      "current_price": 0.92315,
-      "take_profit": 0.92139,
-      "stop_loss": 0.92432,
-      "confidence": 75,
-      "rsi": 37.5,
+      "current_price": 0.92264,
+      "take_profit": 0.92091,
+      "stop_loss": 0.9238,
+      "confidence": 81,
+      "rsi": 34.4,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "SELL"
+      "forecast_dir": "TFM:SELL/CHO:SELL"
     },
     {
-      "pair_name": "AUD/JPY",
+      "pair_name": "GBP/NZD",
+      "signal": "BUY",
+      "current_price": 2.31269,
+      "take_profit": 2.31916,
+      "stop_loss": 2.30838,
+      "confidence": 72,
+      "rsi": 60.3,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "TFM:BUY/CHO:BUY"
+    },
+    {
+      "pair_name": "AUD/CHF",
       "signal": "SELL",
-      "current_price": 113.636,
-      "take_profit": 113.44724,
-      "stop_loss": 113.76184,
-      "confidence": 90,
-      "rsi": 74.7,
+      "current_price": 0.56419,
+      "take_profit": 0.56235,
+      "stop_loss": 0.56541,
+      "confidence": 72,
+      "rsi": 41.6,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "SELL"
+      "forecast_dir": "TFM:SELL/CHO:SELL"
+    },
+    {
+      "pair_name": "AUD/NZD",
+      "signal": "SELL",
+      "current_price": 1.19745,
+      "take_profit": 1.19538,
+      "stop_loss": 1.19883,
+      "confidence": 75,
+      "rsi": 33.9,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:SELL/CHO:SELL"
     },
     {
       "pair_name": "USD/SEK",
       "signal": "BUY",
-      "current_price": 9.59281,
-      "take_profit": 9.6203,
-      "stop_loss": 9.57449,
-      "confidence": 70,
-      "rsi": 26.8,
+      "current_price": 9.58686,
+      "take_profit": 9.61384,
+      "stop_loss": 9.56887,
+      "confidence": 76,
+      "rsi": 25.6,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "BUY"
+      "forecast_dir": "TFM:BUY/CHO:BUY"
     },
     {
       "pair_name": "USD/DKK",
       "signal": "BUY",
-      "current_price": 6.51471,
-      "take_profit": 6.52589,
-      "stop_loss": 6.50725,
-      "confidence": 70,
-      "rsi": 27.0,
+      "current_price": 6.51531,
+      "take_profit": 6.52606,
+      "stop_loss": 6.50815,
+      "confidence": 76,
+      "rsi": 27.9,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "BUY"
-    },
-    {
-      "pair_name": "USD/SGD",
-      "signal": "BUY",
-      "current_price": 1.28816,
-      "take_profit": 1.28963,
-      "stop_loss": 1.28718,
-      "confidence": 70,
-      "rsi": 29.9,
-      "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "BUY"
+      "forecast_dir": "TFM:BUY/CHO:BUY"
     }
   ]
 }
