@@ -1,8 +1,8 @@
-name: Forex Signals Bot — Consensus 5 IA, Scan 30min
+name: Forex Signals Bot — Consensus 5 IA, Scan 10min
 
 on:
   schedule:
-    - cron: '0,30 * * * *'   # Toutes les 30 minutes (XX:00 et XX:30)
+    - cron: '*/10 * * * *'   # Toutes les 10 minutes
   workflow_dispatch:          # Bouton "Run" manuel depuis GitHub
 
 jobs:
