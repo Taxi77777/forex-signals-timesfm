@@ -51,21 +51,25 @@ def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02
     return "HOLD"
 
 
-def _strict_consensus(dirs: dict) -> tuple:
+def _majority_consensus(dirs: dict) -> tuple:
     """
-    Consensus STRICT 5 IA : toutes les IA disponibles doivent être d'accord.
-    Minimum 4 modèles disponibles requis.
-    Retourne (direction, nb_disponibles, unanime: bool).
+    Consensus MAJORITE IA : au moins 3 IA disponibles doivent etre d'accord.
+    Minimum 3 modeles disponibles requis.
+    Retourne (direction, nb_disponibles, consensus_atteint: bool).
     """
     avail = {k: v for k, v in dirs.items() if v != "N/A"}
     n = len(avail)
-    if n < 4:
+    if n < 3:
         return ("HOLD", n, False)
-    vals = set(avail.values())
-    if vals == {"BUY"}:
+    
+    buys = list(avail.values()).count("BUY")
+    sells = list(avail.values()).count("SELL")
+    
+    if buys >= 3:
         return ("BUY", n, True)
-    if vals == {"SELL"}:
+    if sells >= 3:
         return ("SELL", n, True)
+        
     return ("HOLD", n, False)
 
 
@@ -181,19 +185,19 @@ def generate_signal(
         final_signal = "HOLD"
         confidence = 50
 
-    # ─── FILTRE DE CONSENSUS STRICT 5 IA ───────────────────────────────────────
-    # Toutes les IA disponibles (min 4) doivent être unanimes sur la direction.
-    consensus, n_avail, unanime = _strict_consensus(dirs)
+    # FILTRE DE CONSENSUS MAJORITAIRE IA
+    # Au moins 3 IA disponibles doivent etre d'accord sur la direction.
+    consensus, n_avail, has_consensus = _majority_consensus(dirs)
     if final_signal in ["BUY", "SELL"]:
-        if not unanime or consensus != final_signal:
+        if not has_consensus or consensus != final_signal:
             logger.info(
-                f"⚖️ Pas de consensus 5 IA sur {pair_name} ({_fmt_dirs(dirs)}, "
-                f"{n_avail}/5 modèles actifs) → Signal forcé à HOLD"
+                f"Pas de consensus majoritaire sur {pair_name} ({_fmt_dirs(dirs)}, "
+                f"{n_avail}/5 modeles actifs) -> Signal force a HOLD"
             )
             final_signal = "HOLD"
             confidence = 50
         else:
-            logger.info(f"🤝 CONSENSUS {n_avail}/5 IA UNANIME sur {pair_name} : {consensus}")
+            logger.info(f"CONSENSUS {n_avail}/5 IA MAJORITAIRE sur {pair_name} : {consensus}")
 
     # Ignorer les signaux sous le seuil minimum
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":

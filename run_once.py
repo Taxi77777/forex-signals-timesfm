@@ -184,7 +184,7 @@ def main():
             f"🔍 *Scan Forex terminé*\n"
             f"📊 {len(all_data)} paires analysées\n"
             f"🤖 {len(signals)} signaux évalués — 0 signal fort\n"
-            f"⚖️ Consensus strict 5 IA actif\n"
+            f"Consensus majoritaire (>=3/5) IA actif\n"
             f"_Prochain scan dans 30 min_"
         )
 
