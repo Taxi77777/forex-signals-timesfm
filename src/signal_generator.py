@@ -179,11 +179,21 @@ def generate_signal(
         "TFM": timesfm_dir, "CHO": chronos_dir, "MOI": moirai_dir,
         "LLA": lagllama_dir, "GRA": granite_dir,
     }
-    for d in dirs.values():
+
+    # ── PONDERATION DYNAMIQUE : chaque IA vote selon son taux de reussite reel ──
+    from src.track_record import load_track, get_weight
+    _track = load_track()
+    ai_weights = {k: get_weight(_track, k, symbol) for k in dirs}
+    for k, d in dirs.items():
+        w = ai_weights[k]
+        if w == 0:
+            # IA statistiquement mauvaise sur cette paire (<45%) -> ignoree
+            dirs[k] = "N/A" if d != "N/A" else d
+            continue
         if d == "BUY":
-            votes.append(("BUY",  3))
+            votes.append(("BUY",  w))
         elif d == "SELL":
-            votes.append(("SELL", 3))
+            votes.append(("SELL", w))
         elif d == "HOLD":
             votes.append(("HOLD", 1))
         # 'N/A' : modèle indisponible → aucun vote
@@ -215,7 +225,7 @@ def generate_signal(
             final_signal = "HOLD"
             confidence = 50
         else:
-            logger.info(f"CONSENSUS {n_avail}/5 IA MAJORITAIRE sur {pair_name} : {consensus}")
+            logger.info(f"CONSENSUS {n_avail}/5 IA MAJORITAIRE sur {pair_name} : {consensus} | poids: {ai_weights}")
 
     # Ignorer les signaux sous le seuil minimum
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
