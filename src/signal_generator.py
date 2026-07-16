@@ -237,7 +237,7 @@ def generate_signal(
         forecast_dir=  _fmt_dirs(dirs),
         forecast_4h=   forecast.get("target_4h", current_price),
         forecast_24h=  forecast.get("target_24h", current_price),
-        is_strong=     confidence >= config.STRONG_SIGNAL and final_signal != "HOLD",
+        is_strong=     confidence >= config.MIN_CONFIDENCE and final_signal != "HOLD",
     )
 
     logger.info(
