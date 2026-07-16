@@ -152,16 +152,19 @@ def generate_signal(
     elif ind["stoch_k"] > 80:
         votes.append(("SELL", 1))
 
-    # ── Fisher Transform (extremes = signaux forts de retournement, echelle jusqu'a +-4) ────
+    # ── Fisher : croisement en zone extreme (poids gradue selon la profondeur) ────
     fisher = ind["fisher"]
-    if fisher <= -4.0:   votes.append(("BUY",  5))
-    elif fisher <= -3.0: votes.append(("BUY",  4))
-    elif fisher <= -2.0: votes.append(("BUY",  3))
-    elif fisher <= -1.5: votes.append(("BUY",  1))
-    if fisher >= 4.0:    votes.append(("SELL", 5))
-    elif fisher >= 3.0:  votes.append(("SELL", 4))
-    elif fisher >= 2.0:  votes.append(("SELL", 3))
-    elif fisher >= 1.5:  votes.append(("SELL", 1))
+    depth  = ind["fisher_depth"]
+    if ind["fisher_cross_up"]:
+        if depth <= -4.0:   votes.append(("BUY",  5))
+        elif depth <= -3.0: votes.append(("BUY",  4))
+        elif depth <= -2.0: votes.append(("BUY",  3))
+        elif depth <= -1.5: votes.append(("BUY",  1))
+    if ind["fisher_cross_down"]:
+        if depth >= 4.0:    votes.append(("SELL", 5))
+        elif depth >= 3.0:  votes.append(("SELL", 4))
+        elif depth >= 2.0:  votes.append(("SELL", 3))
+        elif depth >= 1.5:  votes.append(("SELL", 1))
 
     # ── Les 5 IA (poids triple chacune) ──────────────────────────────────────
     forecast = get_forecast_direction(current_price, timesfm_predictions)

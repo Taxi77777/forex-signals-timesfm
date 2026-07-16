@@ -86,16 +86,24 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
         window=14,
     ).adx()
 
-    # Fisher Transform (10) — detection des extremes
-    period = 10
+    # Fisher Transform (10) — vraie recursion d'Ehlers (lissage progressif)
+    # value = 0.33*brut + 0.67*prec ; fisher = 0.5*ln((1+v)/(1-v)) + 0.5*fisher_prec
+    # -> montee progressive, asymptote ±7.6 : les paliers ±1.5/2/3/4 deviennent significatifs
+    period = 9
     highest_high = df["High"].rolling(window=period).max()
     lowest_low   = df["Low"].rolling(window=period).min()
-    range_hl     = highest_high - lowest_low
-    range_hl     = range_hl.replace(0, 1e-10)  # evite division par zero
-    value        = 2 * ((df["Close"] - lowest_low) / range_hl) - 1
-    value        = value.clip(-0.999, 0.999)  # borne pour log
-    raw_fisher   = 0.5 * np.log((1 + value) / (1 - value))
-    df["fisher"] = raw_fisher.rolling(window=2).mean()  # lissage 2 periodes
+    range_hl     = (highest_high - lowest_low).replace(0, 1e-10)
+    raw          = (2 * ((df["Close"] - lowest_low) / range_hl) - 1).fillna(0.0)
+    fishers      = []
+    v_prev, f_prev = 0.0, 0.0
+    for x in raw:
+        v = 0.33 * float(x) + 0.67 * v_prev
+        v = max(min(v, 0.999), -0.999)
+        f = 0.5 * np.log((1 + v) / (1 - v)) + 0.5 * f_prev
+        fishers.append(f)
+        v_prev, f_prev = v, f
+    df["fisher"] = fishers
+    df["fisher_trigger"] = pd.Series(fishers, index=df.index).shift(1)  # ligne signal (Fisher decale de 1)
 
     df.dropna(inplace=True)
     return df
@@ -141,24 +149,25 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
         else "Dans les Bandes ✅"
     )
 
-    # Fisher Transform — detection des zones extremes (echelle graduee jusqu'a +-4)
+    # Fisher Transform — CROISEMENT en zone extreme (style TradingView : Fisher vs ligne signal)
+    f1 = float(df.iloc[-1]["fisher"])
+    f2 = float(df.iloc[-2]["fisher"]) if len(df) > 1 else f1
+    f3 = float(df.iloc[-3]["fisher"]) if len(df) > 2 else f2
+    fisher_cross_up   = f1 > f2 and f2 <= f3   # retournement haussier (creux)
+    fisher_cross_down = f1 < f2 and f2 >= f3   # retournement baissier (sommet)
+    depth = f2  # profondeur du creux/sommet au moment du croisement
+
     fisher_status = "Neutre"
-    if fisher >= 4.0:
-        fisher_status = "🔥🔥 EXTREME MAX ACHAT — Retournement SELL imminent"
-    elif fisher >= 3.0:
-        fisher_status = "🔥 Tres extreme (zone SELL forte)"
-    elif fisher >= 2.0:
-        fisher_status = "⚠️ Zone extreme haute (SELL probable)"
-    elif fisher >= 1.5:
-        fisher_status = "📈 Zone haute (pression vendeuse)"
-    elif fisher <= -4.0:
-        fisher_status = "💎💎 EXTREME MAX VENTE — Retournement BUY imminent"
-    elif fisher <= -3.0:
-        fisher_status = "💎 Tres extreme (zone BUY forte)"
-    elif fisher <= -2.0:
-        fisher_status = "⚠️ Zone extreme basse (BUY probable)"
-    elif fisher <= -1.5:
-        fisher_status = "📉 Zone basse (pression acheteuse)"
+    if fisher_cross_up and depth <= -1.5:
+        if depth <= -4.0:   fisher_status = "💎💎 CROISEMENT EXTREME MAX — Retournement BUY tres fort"
+        elif depth <= -3.0: fisher_status = "💎 Croisement tres extreme (BUY fort)"
+        elif depth <= -2.0: fisher_status = "⚠️ Croisement extreme bas (BUY)"
+        else:               fisher_status = "📉 Croisement zone basse (BUY leger)"
+    elif fisher_cross_down and depth >= 1.5:
+        if depth >= 4.0:    fisher_status = "🔥🔥 CROISEMENT EXTREME MAX — Retournement SELL tres fort"
+        elif depth >= 3.0:  fisher_status = "🔥 Croisement tres extreme (SELL fort)"
+        elif depth >= 2.0:  fisher_status = "⚠️ Croisement extreme haut (SELL)"
+        else:               fisher_status = "📈 Croisement zone haute (SELL leger)"
 
     return {
         "close":       close,
@@ -176,4 +185,7 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
         "stoch_k":     stoch_k,
         "fisher":      fisher,
         "fisher_status": fisher_status,
+        "fisher_cross_up":   fisher_cross_up,
+        "fisher_cross_down": fisher_cross_down,
+        "fisher_depth":      depth,
     }
