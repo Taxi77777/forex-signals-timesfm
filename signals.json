@@ -1,14 +1,25 @@
 {
-  "last_update": "2026-07-16T09:47:39.461194+00:00",
+  "last_update": "2026-07-16T11:41:55.959074+00:00",
   "signals": [
+    {
+      "pair_name": "GBP/JPY",
+      "signal": "SELL",
+      "current_price": 218.931,
+      "take_profit": 218.57291,
+      "stop_loss": 219.23793,
+      "confidence": 81,
+      "rsi": 33.7,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:SELL/CHO:SELL"
+    },
     {
       "pair_name": "USD/SEK",
       "signal": "BUY",
-      "current_price": 9.61293,
-      "take_profit": 9.63604,
-      "stop_loss": 9.59312,
+      "current_price": 9.62426,
+      "take_profit": 9.64743,
+      "stop_loss": 9.6044,
       "confidence": 75,
-      "rsi": 63.7,
+      "rsi": 69.7,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "TFM:BUY/CHO:BUY"
     }
