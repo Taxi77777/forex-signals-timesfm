@@ -73,6 +73,7 @@ def format_signal_message(signal: TradingSignal) -> str:
         f"📈 Confiance  : `{conf_bar}` {signal.confidence}%\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"RSI     : `{signal.rsi}` {signal.rsi_status}\n"
+        f"Fisher  : `{signal.fisher:+.2f}` {signal.fisher_status}\n"
         f"MACD    : {signal.macd_trend}\n"
         f"EMA 20/50: {signal.ema_trend}\n"
         f"Bollinger : {signal.bb_position}\n"

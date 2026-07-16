@@ -86,6 +86,17 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
         window=14,
     ).adx()
 
+    # Fisher Transform (10) — detection des extremes
+    period = 10
+    highest_high = df["High"].rolling(window=period).max()
+    lowest_low   = df["Low"].rolling(window=period).min()
+    range_hl     = highest_high - lowest_low
+    range_hl     = range_hl.replace(0, 1e-10)  # evite division par zero
+    value        = 2 * ((df["Close"] - lowest_low) / range_hl) - 1
+    value        = value.clip(-0.999, 0.999)  # borne pour log
+    raw_fisher   = 0.5 * np.log((1 + value) / (1 - value))
+    df["fisher"] = raw_fisher.rolling(window=2).mean()  # lissage 2 periodes
+
     df.dropna(inplace=True)
     return df
 
@@ -112,22 +123,42 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
     ema50       = float(last["ema50"])
     atr         = float(last["atr"])
     stoch_k     = float(last["stoch_k"])
+    fisher      = round(float(last["fisher"]), 2) if "fisher" in last else 0.0
 
-    # ── Interprétations ──────────────────────────────────────────────────────
+    # ── Interpretations ──────────────────────────────────────────────────────
     rsi_status = (
-        "Survente 🔴"    if rsi_value < config.RSI_OVERSOLD
-        else "Surachat 🟠" if rsi_value > config.RSI_OVERBOUGHT
-        else "Neutre ⚪"
+        "Survente 🟢"    if rsi_value < config.RSI_OVERSOLD
+        else "Surachat 🔴" if rsi_value > config.RSI_OVERBOUGHT
+        else "Neutre ⚖️"
     )
 
-    macd_trend = "Haussier ↑ 🟢" if macd_hist > 0 else "Baissier ↓ 🔴"
-    ema_trend  = "Haussier ↑"    if ema20 > ema50  else "Baissier ↓"
+    macd_trend = "Haussier 📈" if macd_hist > 0 else "Baissier 📉"
+    ema_trend  = "Haussier 📈"    if ema20 > ema50  else "Baissier 📉"
 
     bb_position = (
         "Proche Borne Haute ⚠️"  if close > bb_upper * 0.999
         else "Proche Borne Basse ⚠️" if close < bb_lower * 1.001
         else "Dans les Bandes ✅"
     )
+
+    # Fisher Transform — detection des zones extremes (echelle graduee jusqu'a +-4)
+    fisher_status = "Neutre"
+    if fisher >= 4.0:
+        fisher_status = "🔥🔥 EXTREME MAX ACHAT — Retournement SELL imminent"
+    elif fisher >= 3.0:
+        fisher_status = "🔥 Tres extreme (zone SELL forte)"
+    elif fisher >= 2.0:
+        fisher_status = "⚠️ Zone extreme haute (SELL probable)"
+    elif fisher >= 1.5:
+        fisher_status = "📈 Zone haute (pression vendeuse)"
+    elif fisher <= -4.0:
+        fisher_status = "💎💎 EXTREME MAX VENTE — Retournement BUY imminent"
+    elif fisher <= -3.0:
+        fisher_status = "💎 Tres extreme (zone BUY forte)"
+    elif fisher <= -2.0:
+        fisher_status = "⚠️ Zone extreme basse (BUY probable)"
+    elif fisher <= -1.5:
+        fisher_status = "📉 Zone basse (pression acheteuse)"
 
     return {
         "close":       close,
@@ -143,4 +174,6 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
         "bb_lower":    bb_lower,
         "bb_position": bb_position,
         "stoch_k":     stoch_k,
+        "fisher":      fisher,
+        "fisher_status": fisher_status,
     }

@@ -35,6 +35,8 @@ class TradingSignal:
     forecast_4h:   float
     forecast_24h:  float
     is_strong:     bool           # Confiance >= seuil fort
+    fisher:        float          # Fisher Transform value
+    fisher_status: str            # Fisher status description
 
 
 def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02) -> str:
@@ -149,6 +151,17 @@ def generate_signal(
     elif ind["stoch_k"] > 80:
         votes.append(("SELL", 1))
 
+    # ── Fisher Transform (extremes = signaux forts de retournement, echelle jusqu'a +-4) ────
+    fisher = ind["fisher"]
+    if fisher <= -4.0:   votes.append(("BUY",  5))
+    elif fisher <= -3.0: votes.append(("BUY",  4))
+    elif fisher <= -2.0: votes.append(("BUY",  3))
+    elif fisher <= -1.5: votes.append(("BUY",  1))
+    if fisher >= 4.0:    votes.append(("SELL", 5))
+    elif fisher >= 3.0:  votes.append(("SELL", 4))
+    elif fisher >= 2.0:  votes.append(("SELL", 3))
+    elif fisher >= 1.5:  votes.append(("SELL", 1))
+
     # ── Les 5 IA (poids triple chacune) ──────────────────────────────────────
     forecast = get_forecast_direction(current_price, timesfm_predictions)
 
@@ -259,6 +272,8 @@ def generate_signal(
         forecast_4h=   forecast.get("target_4h", current_price),
         forecast_24h=  forecast.get("target_24h", current_price),
         is_strong=     confidence >= config.MIN_CONFIDENCE and final_signal != "HOLD",
+        fisher=        ind["fisher"],
+        fisher_status= ind["fisher_status"],
     )
 
     logger.info(
