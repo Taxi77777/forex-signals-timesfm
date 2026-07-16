@@ -1,27 +1,71 @@
 {
-  "last_update": "2026-07-16T15:03:05.388613+00:00",
+  "last_update": "2026-07-16T15:14:49.789272+00:00",
   "signals": [
+    {
+      "pair_name": "USD/CHF",
+      "signal": "SELL",
+      "current_price": 0.80842,
+      "take_profit": 0.80645,
+      "stop_loss": 0.81011,
+      "confidence": 64,
+      "rsi": 66.3,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:SELL/LLA:SELL/GRA:HOLD"
+    },
     {
       "pair_name": "EUR/GBP",
       "signal": "BUY",
-      "current_price": 0.84838,
-      "take_profit": 0.84975,
-      "stop_loss": 0.84721,
+      "current_price": 0.84819,
+      "take_profit": 0.84958,
+      "stop_loss": 0.847,
       "confidence": 61,
-      "rsi": 55.6,
+      "rsi": 52.1,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "TFM:BUY/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:SELL"
     },
     {
+      "pair_name": "EUR/CHF",
+      "signal": "BUY",
+      "current_price": 0.92489,
+      "take_profit": 0.92753,
+      "stop_loss": 0.92263,
+      "confidence": 68,
+      "rsi": 46.3,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:HOLD"
+    },
+    {
+      "pair_name": "NZD/JPY",
+      "signal": "BUY",
+      "current_price": 94.974,
+      "take_profit": 95.21266,
+      "stop_loss": 94.76944,
+      "confidence": 88,
+      "rsi": 55.4,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY"
+    },
+    {
       "pair_name": "USD/ZAR",
       "signal": "BUY",
-      "current_price": 16.4249,
-      "take_profit": 16.52805,
-      "stop_loss": 16.33648,
-      "confidence": 75,
-      "rsi": 66.6,
+      "current_price": 16.4256,
+      "take_profit": 16.53006,
+      "stop_loss": 16.33606,
+      "confidence": 57,
+      "rsi": 66.8,
       "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:BUY/GRA:SELL"
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:SELL/GRA:SELL"
+    },
+    {
+      "pair_name": "USD/NOK",
+      "signal": "BUY",
+      "current_price": 9.67041,
+      "take_profit": 9.70178,
+      "stop_loss": 9.64352,
+      "confidence": 57,
+      "rsi": 59.4,
+      "macd_trend": "Haussier ↑ 🟢",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:SELL/LLA:BUY/GRA:HOLD"
     }
   ]
 }
