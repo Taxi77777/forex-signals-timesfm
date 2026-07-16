@@ -117,8 +117,8 @@ BB_STD              = 2
 ATR_PERIOD          = 14
 
 # ─── Gestion du risque ─────────────────────────────────────────────────────────
-TAKE_PROFIT_FACTOR  = 1.5     # TP = 1.5x l'ATR
-STOP_LOSS_FACTOR    = 1.0     # SL = 1.0x l'ATR
+TAKE_PROFIT_FACTOR  = 3.5     # TP = 3.5x l'ATR (laisse respirer en 15m)
+STOP_LOSS_FACTOR    = 3.0     # SL = 3.0x l'ATR (laisse respirer en 15m)
 
 # ─── Seuils de confiance ───────────────────────────────────────────────────────
 MIN_CONFIDENCE      = 55      # Signal ignoré si confiance < 55%
