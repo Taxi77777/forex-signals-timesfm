@@ -85,6 +85,7 @@ def generate_signal(
     moirai_predictions: np.ndarray | None = None,
     lagllama_predictions: np.ndarray | None = None,
     granite_predictions: np.ndarray | None = None,
+    df_4h: pd.DataFrame | None = None,
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
@@ -202,6 +203,26 @@ def generate_signal(
     # Ignorer les signaux sous le seuil minimum
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
         final_signal = "HOLD"
+
+    # FILTRE MULTI-TIMEFRAME (4H TREND)
+    if final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty:
+        from src.indicators import compute_all_indicators
+        df_4h_ind = compute_all_indicators(df_4h)
+        if not df_4h_ind.empty:
+            last_4h = df_4h_ind.iloc[-1]
+            ema20_4h = float(last_4h["ema20"])
+            ema50_4h = float(last_4h["ema50"])
+            
+            if final_signal == "BUY" and ema20_4h < ema50_4h:
+                logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 < EMA50) -> Signal BUY annule")
+                final_signal = "HOLD"
+                confidence = 50
+            elif final_signal == "SELL" and ema20_4h > ema50_4h:
+                logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 > EMA50) -> Signal SELL annule")
+                final_signal = "HOLD"
+                confidence = 50
+            else:
+                logger.info(f"✅ Filtre Multi-Timeframe valide sur {symbol} (4h EMA alignee)")
 
     # ─── Niveaux TP / SL basés sur l'ATR ───────────────────────────────────────
     atr = ind["atr"]

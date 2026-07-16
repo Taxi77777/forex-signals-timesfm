@@ -44,6 +44,8 @@ def main():
     # Récupération des données
     logger.info("Téléchargement des données Forex...")
     all_data = fetch_all_pairs()
+    logger.info("Téléchargement des données 4h pour le filtre de tendance...")
+    all_data_4h = fetch_all_pairs(period="60d", interval="4h")
 
     if not all_data:
         logger.error("Aucune donnée récupérée")
@@ -135,6 +137,7 @@ def main():
                 ai_preds["moi"].get(symbol),
                 ai_preds["lla"].get(symbol),
                 ai_preds["gra"].get(symbol),
+                df_4h=all_data_4h.get(symbol) if all_data_4h else None,
             )
             if signal:
                 signals.append(signal)

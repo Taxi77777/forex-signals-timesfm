@@ -46,7 +46,7 @@ def fetch_forex_data(symbol: str, period: str = None, interval: str = None) -> p
         return pd.DataFrame()
 
 
-def fetch_all_pairs() -> dict[str, pd.DataFrame]:
+def fetch_all_pairs(period: str = None, interval: str = None) -> dict[str, pd.DataFrame]:
     """
     Télécharge les données pour toutes les paires configurées.
     
@@ -55,7 +55,7 @@ def fetch_all_pairs() -> dict[str, pd.DataFrame]:
     """
     data = {}
     for symbol in config.FOREX_PAIRS:
-        df = fetch_forex_data(symbol)
+        df = fetch_forex_data(symbol, period=period, interval=interval)
         if not df.empty:
             data[symbol] = df
     return data
