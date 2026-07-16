@@ -1,25 +1,14 @@
 {
-  "last_update": "2026-07-16T16:16:25.402824+00:00",
+  "last_update": "2026-07-16T16:51:11.017352+00:00",
   "signals": [
     {
-      "pair_name": "GBP/CHF",
+      "pair_name": "AUD/USD",
       "signal": "BUY",
-      "current_price": 1.08914,
-      "take_profit": 1.09256,
-      "stop_loss": 1.08621,
-      "confidence": 78,
-      "rsi": 36.2,
-      "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY"
-    },
-    {
-      "pair_name": "AUD/CHF",
-      "signal": "BUY",
-      "current_price": 0.56557,
-      "take_profit": 0.56878,
-      "stop_loss": 0.56282,
-      "confidence": 61,
-      "rsi": 50.5,
+      "current_price": 0.69959,
+      "take_profit": 0.70081,
+      "stop_loss": 0.69856,
+      "confidence": 63,
+      "rsi": 37.2,
       "macd_trend": "Baissier 📉",
       "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:BUY/LLA:BUY/GRA:BUY"
     }
