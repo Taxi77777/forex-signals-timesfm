@@ -37,11 +37,50 @@ class TradingSignal:
     is_strong:     bool           # Confiance >= seuil fort
 
 
+def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02) -> str:
+    """Direction prédite par un modèle IA. 'N/A' = modèle indisponible."""
+    if predictions is None or len(predictions) == 0:
+        return "N/A"
+    idx = min(config.FORECAST_HORIZON - 1, len(predictions) - 1)
+    target = float(predictions[idx])
+    var = (target - current_price) / current_price * 100
+    if var > threshold_pct:
+        return "BUY"
+    if var < -threshold_pct:
+        return "SELL"
+    return "HOLD"
+
+
+def _strict_consensus(dirs: dict) -> tuple:
+    """
+    Consensus STRICT 5 IA : toutes les IA disponibles doivent être d'accord.
+    Minimum 4 modèles disponibles requis.
+    Retourne (direction, nb_disponibles, unanime: bool).
+    """
+    avail = {k: v for k, v in dirs.items() if v != "N/A"}
+    n = len(avail)
+    if n < 4:
+        return ("HOLD", n, False)
+    vals = set(avail.values())
+    if vals == {"BUY"}:
+        return ("BUY", n, True)
+    if vals == {"SELL"}:
+        return ("SELL", n, True)
+    return ("HOLD", n, False)
+
+
+def _fmt_dirs(dirs: dict) -> str:
+    return "/".join(f"{k}:{v}" for k, v in dirs.items())
+
+
 def generate_signal(
     symbol: str,
     df_with_indicators,
     timesfm_predictions: np.ndarray | None,
     chronos_predictions: np.ndarray | None,
+    moirai_predictions: np.ndarray | None = None,
+    lagllama_predictions: np.ndarray | None = None,
+    granite_predictions: np.ndarray | None = None,
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
@@ -105,25 +144,27 @@ def generate_signal(
     elif ind["stoch_k"] > 80:
         votes.append(("SELL", 1))
 
-    # ── TimesFM (poids triple) ────────────────────────────────────────────────
+    # ── Les 5 IA (poids triple chacune) ──────────────────────────────────────
     forecast = get_forecast_direction(current_price, timesfm_predictions)
-    timesfm_dir = forecast["direction"]
-    if timesfm_dir == "BUY":
-        votes.append(("BUY",  3))
-    elif timesfm_dir == "SELL":
-        votes.append(("SELL", 3))
-    else:
-        votes.append(("HOLD", 1))
 
-    # ── Amazon Chronos (poids triple) ─────────────────────────────────────────
-    from src.chronos_predictor import get_chronos_direction, predict_chronos
-    chronos_dir = get_chronos_direction(current_price, chronos_predictions)
-    if chronos_dir == "BUY":
-        votes.append(("BUY",  3))
-    elif chronos_dir == "SELL":
-        votes.append(("SELL", 3))
-    else:
-        votes.append(("HOLD", 1))
+    timesfm_dir  = _ai_direction(current_price, timesfm_predictions)
+    chronos_dir  = _ai_direction(current_price, chronos_predictions)
+    moirai_dir   = _ai_direction(current_price, moirai_predictions)
+    lagllama_dir = _ai_direction(current_price, lagllama_predictions)
+    granite_dir  = _ai_direction(current_price, granite_predictions)
+
+    dirs = {
+        "TFM": timesfm_dir, "CHO": chronos_dir, "MOI": moirai_dir,
+        "LLA": lagllama_dir, "GRA": granite_dir,
+    }
+    for d in dirs.values():
+        if d == "BUY":
+            votes.append(("BUY",  3))
+        elif d == "SELL":
+            votes.append(("SELL", 3))
+        elif d == "HOLD":
+            votes.append(("HOLD", 1))
+        # 'N/A' : modèle indisponible → aucun vote
 
     # ─── Comptage pondéré ───────────────────────────────────────────────────────
     score_buy  = sum(w for sig, w in votes if sig == "BUY")
@@ -140,17 +181,19 @@ def generate_signal(
         final_signal = "HOLD"
         confidence = 50
 
-    # ─── FILTRE DE DOUBLE CONSENSUS STRICT ─────────────────────────────────────
-    # Si le signal final est un BUY ou un SELL, il faut impérativement que
-    # Google TimesFM ET Amazon Chronos soient d'accord sur cette direction.
+    # ─── FILTRE DE CONSENSUS STRICT 5 IA ───────────────────────────────────────
+    # Toutes les IA disponibles (min 4) doivent être unanimes sur la direction.
+    consensus, n_avail, unanime = _strict_consensus(dirs)
     if final_signal in ["BUY", "SELL"]:
-        if timesfm_dir != chronos_dir:
+        if not unanime or consensus != final_signal:
             logger.info(
-                f"⚖️ Désaccord IA sur {pair_name} (TimesFM: {timesfm_dir} vs Chronos: {chronos_dir}) "
-                f"→ Signal filtré et forcé à HOLD pour sécurité"
+                f"⚖️ Pas de consensus 5 IA sur {pair_name} ({_fmt_dirs(dirs)}, "
+                f"{n_avail}/5 modèles actifs) → Signal forcé à HOLD"
             )
             final_signal = "HOLD"
             confidence = 50
+        else:
+            logger.info(f"🤝 CONSENSUS {n_avail}/5 IA UNANIME sur {pair_name} : {consensus}")
 
     # Ignorer les signaux sous le seuil minimum
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
@@ -187,7 +230,7 @@ def generate_signal(
         ema_trend=     ind["ema_trend"],
         bb_position=   ind["bb_position"],
         atr=           round(atr, 5),
-        forecast_dir=  f"TFM:{timesfm_dir}/CHO:{chronos_dir}",
+        forecast_dir=  _fmt_dirs(dirs),
         forecast_4h=   forecast.get("target_4h", current_price),
         forecast_24h=  forecast.get("target_24h", current_price),
         is_strong=     confidence >= config.STRONG_SIGNAL and final_signal != "HOLD",
@@ -195,6 +238,6 @@ def generate_signal(
 
     logger.info(
         f"📊 {pair_name}: {final_signal} | Confiance: {confidence}% "
-        f"| RSI: {ind['rsi']:.1f} | TFM: {timesfm_dir} | CHO: {chronos_dir}"
+        f"| RSI: {ind['rsi']:.1f} | {_fmt_dirs(dirs)}"
     )
     return signal
