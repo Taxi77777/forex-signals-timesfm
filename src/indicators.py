@@ -78,6 +78,14 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["stoch_k"] = stoch.stoch()
     df["stoch_d"] = stoch.stoch_signal()
 
+    # ── ADX (force de la tendance) ───────────────────────────────────────────
+    df["adx"] = ta.trend.ADXIndicator(
+        high=df["High"],
+        low=df["Low"],
+        close=df["Close"],
+        window=14,
+    ).adx()
+
     df.dropna(inplace=True)
     return df
 

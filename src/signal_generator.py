@@ -56,6 +56,15 @@ def generate_signal(
         return None
 
     pair_name = config.PAIR_NAMES.get(symbol, symbol)
+
+    # ── Filtre de Tendance Forte ADX (Anti-Range) ───────────────────────────
+    last_row = df_with_indicators.iloc[-1]
+    if "adx" in last_row:
+        adx = float(last_row["adx"])
+        if adx < 20:
+            logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 20) → Signal annulé")
+            return None
+
     ind = get_indicator_summary(df_with_indicators)
     current_price = ind["close"]
 
