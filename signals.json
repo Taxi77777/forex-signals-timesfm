@@ -1,14 +1,14 @@
 {
-  "last_update": "2026-07-16T09:36:55.823525+00:00",
+  "last_update": "2026-07-16T09:47:39.461194+00:00",
   "signals": [
     {
       "pair_name": "USD/SEK",
       "signal": "BUY",
-      "current_price": 9.61359,
-      "take_profit": 9.63763,
-      "stop_loss": 9.59298,
+      "current_price": 9.61293,
+      "take_profit": 9.63604,
+      "stop_loss": 9.59312,
       "confidence": 75,
-      "rsi": 65.6,
+      "rsi": 63.7,
       "macd_trend": "Haussier ↑ 🟢",
       "forecast_dir": "TFM:BUY/CHO:BUY"
     }
