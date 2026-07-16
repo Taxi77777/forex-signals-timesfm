@@ -1,71 +1,93 @@
 {
-  "last_update": "2026-07-16T15:14:49.789272+00:00",
+  "last_update": "2026-07-16T15:24:05.392173+00:00",
   "signals": [
     {
-      "pair_name": "USD/CHF",
+      "pair_name": "GBP/USD",
       "signal": "SELL",
-      "current_price": 0.80842,
-      "take_profit": 0.80645,
-      "stop_loss": 0.81011,
-      "confidence": 64,
-      "rsi": 66.3,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:SELL/LLA:SELL/GRA:HOLD"
+      "current_price": 1.34865,
+      "take_profit": 1.34627,
+      "stop_loss": 1.35069,
+      "confidence": 63,
+      "rsi": 31.2,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:SELL/CHO:SELL/MOI:HOLD/LLA:SELL/GRA:BUY"
     },
     {
       "pair_name": "EUR/GBP",
       "signal": "BUY",
-      "current_price": 0.84819,
-      "take_profit": 0.84958,
-      "stop_loss": 0.847,
+      "current_price": 0.84842,
+      "take_profit": 0.84981,
+      "stop_loss": 0.84723,
       "confidence": 61,
-      "rsi": 52.1,
+      "rsi": 55.8,
       "macd_trend": "Baissier ↓ 🔴",
       "forecast_dir": "TFM:BUY/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:SELL"
     },
     {
       "pair_name": "EUR/CHF",
       "signal": "BUY",
-      "current_price": 0.92489,
-      "take_profit": 0.92753,
-      "stop_loss": 0.92263,
-      "confidence": 68,
-      "rsi": 46.3,
+      "current_price": 0.92471,
+      "take_profit": 0.92731,
+      "stop_loss": 0.92248,
+      "confidence": 61,
+      "rsi": 42.2,
       "macd_trend": "Baissier ↓ 🔴",
-      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:HOLD"
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY"
     },
     {
       "pair_name": "NZD/JPY",
       "signal": "BUY",
-      "current_price": 94.974,
-      "take_profit": 95.21266,
-      "stop_loss": 94.76944,
-      "confidence": 88,
-      "rsi": 55.4,
+      "current_price": 94.949,
+      "take_profit": 95.18286,
+      "stop_loss": 94.74855,
+      "confidence": 72,
+      "rsi": 52.2,
       "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY"
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY"
+    },
+    {
+      "pair_name": "CAD/JPY",
+      "signal": "BUY",
+      "current_price": 115.723,
+      "take_profit": 116.00704,
+      "stop_loss": 115.47954,
+      "confidence": 55,
+      "rsi": 58.9,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:BUY/LLA:BUY/GRA:BUY"
+    },
+    {
+      "pair_name": "USD/MXN",
+      "signal": "BUY",
+      "current_price": 17.4299,
+      "take_profit": 17.50079,
+      "stop_loss": 17.36914,
+      "confidence": 61,
+      "rsi": 52.7,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:BUY/CHO:SELL/MOI:HOLD/LLA:BUY/GRA:BUY"
     },
     {
       "pair_name": "USD/ZAR",
       "signal": "BUY",
-      "current_price": 16.4256,
-      "take_profit": 16.53006,
-      "stop_loss": 16.33606,
-      "confidence": 57,
-      "rsi": 66.8,
-      "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:SELL/GRA:SELL"
+      "current_price": 16.41173,
+      "take_profit": 16.51537,
+      "stop_loss": 16.32289,
+      "confidence": 58,
+      "rsi": 59.5,
+      "macd_trend": "Baissier ↓ 🔴",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:SELL/GRA:HOLD"
     },
     {
-      "pair_name": "USD/NOK",
+      "pair_name": "USD/SEK",
       "signal": "BUY",
-      "current_price": 9.67041,
-      "take_profit": 9.70178,
-      "stop_loss": 9.64352,
-      "confidence": 57,
-      "rsi": 59.4,
+      "current_price": 9.63994,
+      "take_profit": 9.67222,
+      "stop_loss": 9.61228,
+      "confidence": 66,
+      "rsi": 62.9,
       "macd_trend": "Haussier ↑ 🟢",
-      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:SELL/LLA:BUY/GRA:HOLD"
+      "forecast_dir": "TFM:BUY/CHO:SELL/MOI:HOLD/LLA:BUY/GRA:BUY"
     }
   ]
 }
