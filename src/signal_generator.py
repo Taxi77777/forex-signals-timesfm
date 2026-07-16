@@ -5,6 +5,7 @@ Combine les prédictions TimesFM + indicateurs techniques
 
 import logging
 import numpy as np
+import pandas as pd
 from dataclasses import dataclass
 import config
 from src.indicators import get_indicator_summary
