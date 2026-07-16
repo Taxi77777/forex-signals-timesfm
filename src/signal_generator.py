@@ -61,8 +61,8 @@ def generate_signal(
     last_row = df_with_indicators.iloc[-1]
     if "adx" in last_row:
         adx = float(last_row["adx"])
-        if adx < 20:
-            logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 20) → Signal annulé")
+        if adx < 15:
+            logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 15) → Signal annulé")
             return None
 
     ind = get_indicator_summary(df_with_indicators)

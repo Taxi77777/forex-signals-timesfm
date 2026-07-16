@@ -62,8 +62,8 @@ def get_chronos_direction(current_price: float, predictions: np.ndarray | None) 
     target_4h = float(predictions[min(3, len(predictions) - 1)])
     variation_4h = (target_4h - current_price) / current_price * 100
 
-    if variation_4h > 0.05:
+    if variation_4h > 0.02:
         return "BUY"
-    elif variation_4h < -0.05:
+    elif variation_4h < -0.02:
         return "SELL"
     return "HOLD"

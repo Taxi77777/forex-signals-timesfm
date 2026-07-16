@@ -113,8 +113,8 @@ def get_forecast_direction(current_price: float, predictions: np.ndarray) -> dic
     variation_24h = (target_24h - current_price) / current_price * 100
 
     direction = (
-        "BUY"  if variation_4h > 0.05
-        else "SELL" if variation_4h < -0.05
+        "BUY"  if variation_4h > 0.02
+        else "SELL" if variation_4h < -0.02
         else "HOLD"
     )
 
