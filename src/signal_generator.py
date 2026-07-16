@@ -89,7 +89,6 @@ def generate_signal(
     lagllama_predictions: np.ndarray | None = None,
     granite_predictions: np.ndarray | None = None,
     df_4h: pd.DataFrame | None = None,
-    df_1d: pd.DataFrame | None = None,
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
@@ -219,40 +218,26 @@ def generate_signal(
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
         final_signal = "HOLD"
 
-    # FILTRE MULTI-TIMEFRAME (4H & 1D TREND)
-    if final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty and df_1d is not None and not df_1d.empty:
+    # FILTRE MULTI-TIMEFRAME (4H TREND)
+    if final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty:
         from src.indicators import compute_all_indicators
         df_4h_ind = compute_all_indicators(df_4h)
-        df_1d_ind = compute_all_indicators(df_1d)
-        if not df_4h_ind.empty and not df_1d_ind.empty:
+        if not df_4h_ind.empty:
             last_4h = df_4h_ind.iloc[-1]
-            last_1d = df_1d_ind.iloc[-1]
             ema20_4h = float(last_4h["ema20"])
             ema50_4h = float(last_4h["ema50"])
-            ema20_1d = float(last_1d["ema20"])
-            ema50_1d = float(last_1d["ema50"])
             
-            if final_signal == "BUY":
-                if ema20_4h < ema50_4h:
-                    logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 < EMA50) -> Signal BUY annule")
-                    final_signal = "HOLD"
-                    confidence = 50
-                elif ema20_1d < ema50_1d:
-                    logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (1d EMA20 < EMA50) -> Signal BUY annule")
-                    final_signal = "HOLD"
-                    confidence = 50
-            elif final_signal == "SELL":
-                if ema20_4h > ema50_4h:
-                    logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 > EMA50) -> Signal SELL annule")
-                    final_signal = "HOLD"
-                    confidence = 50
-                elif ema20_1d > ema50_1d:
-                    logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (1d EMA20 > EMA50) -> Signal SELL annule")
-                    final_signal = "HOLD"
-                    confidence = 50
+            if final_signal == "BUY" and ema20_4h < ema50_4h:
+                logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 < EMA50) -> Signal BUY annule")
+                final_signal = "HOLD"
+                confidence = 50
+            elif final_signal == "SELL" and ema20_4h > ema50_4h:
+                logger.info(f"⏳ Filtre Multi-Timeframe actif sur {symbol} (4h EMA20 > EMA50) -> Signal SELL annule")
+                final_signal = "HOLD"
+                confidence = 50
             
             if final_signal != "HOLD":
-                logger.info(f"✅ Filtre Multi-Timeframe valide sur {symbol} (4h & 1d EMA alignees)")
+                logger.info(f"✅ Filtre Multi-Timeframe valide sur {symbol} (4h EMA alignee)")
 
     # ─── Niveaux TP / SL basés sur l'ATR ───────────────────────────────────────
     atr = ind["atr"]
