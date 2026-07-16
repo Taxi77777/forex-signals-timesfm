@@ -1,27 +1,49 @@
 {
-  "last_update": "2026-07-16T18:02:09.558393+00:00",
+  "last_update": "2026-07-16T19:28:18.576246+00:00",
   "signals": [
     {
-      "pair_name": "GBP/USD",
+      "pair_name": "GBP/CHF",
       "signal": "BUY",
-      "current_price": 1.347,
-      "take_profit": 1.34905,
-      "stop_loss": 1.34525,
+      "current_price": 1.08968,
+      "take_profit": 1.09256,
+      "stop_loss": 1.08721,
+      "confidence": 75,
+      "rsi": 46.8,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:HOLD"
+    },
+    {
+      "pair_name": "AUD/CHF",
+      "signal": "BUY",
+      "current_price": 0.56577,
+      "take_profit": 0.56899,
+      "stop_loss": 0.56301,
+      "confidence": 61,
+      "rsi": 52.4,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:BUY/LLA:BUY/GRA:BUY"
+    },
+    {
+      "pair_name": "NZD/JPY",
+      "signal": "BUY",
+      "current_price": 94.836,
+      "take_profit": 95.01537,
+      "stop_loss": 94.68225,
       "confidence": 62,
-      "rsi": 32.2,
+      "rsi": 43.9,
       "macd_trend": "Baissier 📉",
       "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:BUY"
     },
     {
       "pair_name": "USD/ZAR",
       "signal": "BUY",
-      "current_price": 16.40949,
-      "take_profit": 16.50359,
-      "stop_loss": 16.32884,
-      "confidence": 85,
-      "rsi": 51.3,
+      "current_price": 16.407,
+      "take_profit": 16.49658,
+      "stop_loss": 16.33022,
+      "confidence": 61,
+      "rsi": 49.7,
       "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY"
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY"
     }
   ]
 }
