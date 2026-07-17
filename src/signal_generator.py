@@ -23,7 +23,7 @@ class TradingSignal:
     confidence:    int            # 0-100
     current_price: float
     take_profit:   float
-    stop_loss:     float
+    stop_loss:     str
     tp_pct:        float
     sl_pct:        float
     rsi:           float
@@ -268,16 +268,14 @@ def generate_signal(
     atr = ind["atr"]
     if final_signal == "BUY":
         take_profit = round(current_price + atr * config.TAKE_PROFIT_FACTOR, 5)
-        stop_loss   = round(current_price - atr * config.STOP_LOSS_FACTOR, 5)
     elif final_signal == "SELL":
         take_profit = round(current_price - atr * config.TAKE_PROFIT_FACTOR, 5)
-        stop_loss   = round(current_price + atr * config.STOP_LOSS_FACTOR, 5)
     else:
         take_profit = current_price
-        stop_loss   = current_price
 
-    tp_pct = round(abs(take_profit - current_price) / current_price * 100, 3)
-    sl_pct = round(abs(stop_loss   - current_price) / current_price * 100, 3)
+    stop_loss   = "Aucun"
+    tp_pct      = round(abs(take_profit - current_price) / current_price * 100, 3)
+    sl_pct      = 0.0
 
     signal = TradingSignal(
         symbol=        symbol,

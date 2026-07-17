@@ -62,6 +62,7 @@ def format_signal_message(signal: TradingSignal) -> str:
 
     tp_sign = "+" if signal.signal == "BUY" else "-"
     sl_sign = "-" if signal.signal == "BUY" else "+"
+    sl_text = "Aucun" if signal.stop_loss == "Aucun" else f"`{signal.stop_loss}` ({sl_sign}{signal.sl_pct}%)"
 
     return (
         f"{emoji} *SIGNAL FOREX — {signal.pair_name}*{strong_tag}\n"
@@ -69,7 +70,7 @@ def format_signal_message(signal: TradingSignal) -> str:
         f"📊 Signal     : {emoji} *{signal.signal}*\n"
         f"💰 Prix actuel: `{signal.current_price}`\n"
         f"🎯 Take Profit: `{signal.take_profit}` ({tp_sign}{signal.tp_pct}%)\n"
-        f"🛑 Stop Loss  : `{signal.stop_loss}` ({sl_sign}{signal.sl_pct}%)\n"
+        f"🛑 Stop Loss  : {sl_text}\n"
         f"📈 Confiance  : `{conf_bar}` {signal.confidence}%\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"RSI     : `{signal.rsi}` {signal.rsi_status}\n"
