@@ -66,12 +66,12 @@ def get_weight(track: dict, model: str, symbol: str) -> int:
     if not stats:
         return DEFAULT_WEIGHT
     acc = stats["wins"] / stats["total"]
+    # Plancher a 2 : les 5 IA votent TOUJOURS.
+    # Le carnet ne fait qu'AMPLIFIER les meilleures.
     if acc >= 0.60: return 5
     if acc >= 0.55: return 4
     if acc >= 0.52: return 3
-    if acc >= 0.48: return 2
-    if acc >= 0.45: return 1
-    return 0
+    return 2
 
 
 def accuracy_summary(track: dict) -> str:
