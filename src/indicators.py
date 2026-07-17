@@ -105,6 +105,40 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["fisher"] = fishers
     df["fisher_trigger"] = pd.Series(fishers, index=df.index).shift(1)  # ligne signal (Fisher decale de 1)
 
+    # ── SUPERTREND (ATR 10, multiplicateur 3) ──
+    try:
+        st_period, st_mult = 10, 3.0
+        atr_st = ta.volatility.AverageTrueRange(
+            df["High"], df["Low"], df["Close"], window=st_period
+        ).average_true_range()
+        hl2 = (df["High"] + df["Low"]) / 2
+        upper = hl2 + st_mult * atr_st
+        lower = hl2 - st_mult * atr_st
+        close_v = df["Close"].values
+        up_v, lo_v = upper.values, lower.values
+        st_line = [0.0] * len(df)
+        st_dir  = [1]   * len(df)   # 1 = haussier, -1 = baissier
+        for i in range(len(df)):
+            if i == 0:
+                st_line[i] = lo_v[i]
+                continue
+            f_up = up_v[i] if (up_v[i] < st_line[i-1] or close_v[i-1] > st_line[i-1]) else st_line[i-1]
+            f_lo = lo_v[i] if (lo_v[i] > st_line[i-1] or close_v[i-1] < st_line[i-1]) else st_line[i-1]
+            if close_v[i] > f_up:
+                st_dir[i], st_line[i] = 1, f_lo
+            elif close_v[i] < f_lo:
+                st_dir[i], st_line[i] = -1, f_up
+            else:
+                st_dir[i] = st_dir[i-1]
+                st_line[i] = f_lo if st_dir[i] == 1 else f_up
+        df["supertrend"]     = st_line
+        df["supertrend_dir"] = st_dir
+        # Flip
+        df["st_flip_up"]   = (pd.Series(st_dir, index=df.index) == 1)  & (pd.Series(st_dir, index=df.index).shift(1) == -1)
+        df["st_flip_down"] = (pd.Series(st_dir, index=df.index) == -1) & (pd.Series(st_dir, index=df.index).shift(1) == 1)
+    except Exception as e:
+        logger.error(f"Error computing SuperTrend: {e}")
+
     df.dropna(inplace=True)
     return df
 

@@ -1,8 +1,8 @@
-name: Forex Signals Bot — Consensus 5 IA, Scan 10min
+name: Forex Signals Bot — Consensus 5 IA, Scan 5min
 
 on:
   schedule:
-    - cron: '*/10 * * * *'   # Toutes les 10 minutes
+    - cron: '*/5 * * * *'   # Toutes les 5 minutes
   workflow_dispatch:          # Bouton "Run" manuel depuis GitHub
 
 jobs:
@@ -40,7 +40,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           USE_TIMESFM: 'true'
-          DATA_INTERVAL: '15m'
+          DATA_INTERVAL: '5m'
           SIGNAL_FREQUENCY_HOURS: '1'
           LOG_LEVEL: 'INFO'
         run: python run_once.py
