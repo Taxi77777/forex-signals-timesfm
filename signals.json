@@ -1,16 +1,4 @@
 {
-  "last_update": "2026-07-17T18:06:38.731394+00:00",
-  "signals": [
-    {
-      "pair_name": "GBP/CHF",
-      "signal": "SELL",
-      "current_price": 1.08621,
-      "take_profit": 1.08427,
-      "stop_loss": "Aucun",
-      "confidence": 61,
-      "rsi": 57.9,
-      "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:HOLD/LLA:SELL/GRA:SELL"
-    }
-  ]
+  "last_update": "2026-07-17T18:50:37.938549+00:00",
+  "signals": []
 }
