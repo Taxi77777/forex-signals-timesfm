@@ -180,8 +180,9 @@ def main():
             logger.error(f"Erreur {pair_name}: {e}")
             continue
 
-    # Envoi Telegram (uniquement les signaux forts)
+    # Envoi Telegram (uniquement les signaux forts triés par confiance décroissante)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
+    strong_signals.sort(key=lambda s: s.confidence, reverse=True)
     
     # Exporter au format JSON pour le site web (GitHub Pages)
     import json
