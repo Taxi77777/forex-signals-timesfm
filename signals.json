@@ -1,16 +1,4 @@
 {
-  "last_update": "2026-07-17T12:30:29.647778+00:00",
-  "signals": [
-    {
-      "pair_name": "EUR/GBP",
-      "signal": "BUY",
-      "current_price": 0.85103,
-      "take_profit": 0.85181,
-      "stop_loss": 0.85036,
-      "confidence": 76,
-      "rsi": 57.4,
-      "macd_trend": "Haussier 📈",
-      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:BUY"
-    }
-  ]
+  "last_update": "2026-07-17T12:49:58.016564+00:00",
+  "signals": []
 }
