@@ -1,4 +1,49 @@
 {
-  "last_update": "2026-07-17T12:49:58.016564+00:00",
-  "signals": []
+  "last_update": "2026-07-17T14:23:12.357286+00:00",
+  "signals": [
+    {
+      "pair_name": "AUD/USD",
+      "signal": "SELL",
+      "current_price": 0.69818,
+      "take_profit": 0.69767,
+      "stop_loss": 0.69861,
+      "confidence": 57,
+      "rsi": 68.9,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:HOLD/LLA:SELL/GRA:SELL"
+    },
+    {
+      "pair_name": "EUR/GBP",
+      "signal": "BUY",
+      "current_price": 0.8504,
+      "take_profit": 0.85128,
+      "stop_loss": 0.84965,
+      "confidence": 69,
+      "rsi": 46.5,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:BUY"
+    },
+    {
+      "pair_name": "USD/ZAR",
+      "signal": "BUY",
+      "current_price": 16.52032,
+      "take_profit": 16.58487,
+      "stop_loss": 16.465,
+      "confidence": 60,
+      "rsi": 43.7,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:BUY/LLA:BUY/GRA:BUY"
+    },
+    {
+      "pair_name": "USD/DKK",
+      "signal": "BUY",
+      "current_price": 6.5344,
+      "take_profit": 6.54172,
+      "stop_loss": 6.52813,
+      "confidence": 57,
+      "rsi": 36.5,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:HOLD/LLA:BUY/GRA:BUY"
+    }
+  ]
 }
