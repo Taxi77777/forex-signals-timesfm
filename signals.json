@@ -1,4 +1,16 @@
 {
-  "last_update": "2026-07-18T20:35:58.197168+00:00",
-  "signals": []
+  "last_update": "2026-07-18T21:31:45.828591+00:00",
+  "signals": [
+    {
+      "pair_name": "AUD/CHF",
+      "signal": "SELL",
+      "current_price": 0.56295,
+      "take_profit": 0.56162,
+      "stop_loss": "Aucun",
+      "confidence": 64,
+      "rsi": 17.0,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:HOLD/LLA:SELL/GRA:SELL"
+    }
+  ]
 }
