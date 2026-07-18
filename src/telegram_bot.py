@@ -129,24 +129,26 @@ def format_summary_message(signals: list[TradingSignal]) -> str:
     return "\n".join(lines)
 
 
-async def send_message_async(text: str) -> bool:
+async def send_message_async(text: str, chat_id: str = None) -> bool:
     """
     Envoie un message Telegram de manière asynchrone.
     
     Args:
         text: Texte du message (Markdown)
+        chat_id: ID du canal ou groupe ciblé (sinon config.TELEGRAM_CHAT_ID par défaut)
     
     Returns:
         True si succès, False sinon
     """
-    if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_CHAT_ID:
-        logger.error("❌ Telegram: TOKEN ou CHAT_ID manquant dans .env")
+    target_chat = chat_id if chat_id else config.TELEGRAM_CHAT_ID
+    if not config.TELEGRAM_BOT_TOKEN or not target_chat:
+        logger.error("❌ Telegram: TOKEN ou CHAT_ID manquant")
         return False
 
     try:
         bot = Bot(token=config.TELEGRAM_BOT_TOKEN)
         await bot.send_message(
-            chat_id=config.TELEGRAM_CHAT_ID,
+            chat_id=target_chat,
             text=text,
             parse_mode=ParseMode.MARKDOWN,
         )
@@ -157,12 +159,13 @@ async def send_message_async(text: str) -> bool:
         return False
 
 
-def send_message(text: str) -> bool:
+def send_message(text: str, chat_id: str = None) -> bool:
     """
     Wrapper synchrone pour envoyer un message Telegram.
     
     Args:
         text: Texte du message
+        chat_id: ID du canal ou groupe ciblé
     
     Returns:
         True si succès, False sinon
@@ -172,12 +175,12 @@ def send_message(text: str) -> bool:
         if loop.is_running():
             import concurrent.futures
             with concurrent.futures.ThreadPoolExecutor() as pool:
-                future = pool.submit(asyncio.run, send_message_async(text))
+                future = pool.submit(asyncio.run, send_message_async(text, chat_id=chat_id))
                 return future.result()
         else:
-            return loop.run_until_complete(send_message_async(text))
+            return loop.run_until_complete(send_message_async(text, chat_id=chat_id))
     except Exception:
-        return asyncio.run(send_message_async(text))
+        return asyncio.run(send_message_async(text, chat_id=chat_id))
 
 
 def send_signal(signal: TradingSignal) -> bool:
