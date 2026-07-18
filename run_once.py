@@ -180,11 +180,18 @@ def main():
             logger.error(f"Erreur {pair_name}: {e}")
             continue
 
+    # ── 1. Filtre de Session Majeure ──
+    from datetime import datetime, timezone
+    now_utc = datetime.now(timezone.utc)
+    current_hour_utc = now_utc.hour
+    is_weekend = now_utc.weekday() >= 5
+    
+    # Session de Londres + New York (07:00 UTC à 21:00 UTC)
+    is_session_active = (7 <= current_hour_utc <= 21)
+    
     # ── DXY (US Dollar Index) Guard pour le Forex ──
     dxy_trend = "NEUTRAL"
-    from datetime import datetime, timezone
-    is_weekend = datetime.now(timezone.utc).weekday() >= 5
-    if not is_weekend:
+    if not is_weekend and is_session_active:
         try:
             import yfinance as yf
             dxy_df = yf.download("DX-Y.NYB", period="10d", interval="1h", progress=False)
@@ -204,47 +211,106 @@ def main():
         except Exception as e:
             logger.error(f"Erreur calcul DXY Guard : {e}")
 
+    # ── US 10Y Yield Guard ──
+    yield_trend = "NEUTRAL"
+    if not is_weekend and is_session_active:
+        try:
+            import yfinance as yf
+            tnx_df = yf.download("^TNX", period="10d", interval="1h", progress=False)
+            if tnx_df is not None and not tnx_df.empty:
+                tnx_df_ind = compute_all_indicators(tnx_df)
+                if not tnx_df_ind.empty:
+                    tnx_last = tnx_df_ind.iloc[-1]
+                    tnx_ema20 = float(tnx_last["ema20"])
+                    tnx_ema50 = float(tnx_last["ema50"])
+                    tnx_st_dir = int(tnx_last["supertrend_dir"])
+                    
+                    if tnx_ema20 > tnx_ema50 and tnx_st_dir == 1:
+                        yield_trend = "BULLISH"
+                    elif tnx_ema20 < tnx_ema50 and tnx_st_dir == -1:
+                        yield_trend = "BEARISH"
+            logger.info(f"📊 Macro Guard | US 10Y Yield (^TNX 1H) : {yield_trend}")
+        except Exception as e:
+            logger.error(f"Erreur calcul Yield Guard : {e}")
+
     # Envoi Telegram (uniquement les signaux forts triés par confiance décroissante)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
     
-    # Filtrer avec le DXY Correlation Guard
+    # Si hors session, on vide les signaux forts
+    if not is_session_active:
+        logger.info(f"⏳ Session Filter | Hors sessions majeures (Heure UTC : {now_utc.strftime('%H:%M')}). Filtre actif.")
+        strong_signals = []
+    
+    # Filtrer avec le DXY et Yield Correlation Guards
     filtered_strong_signals = []
     for s in strong_signals:
         clean_sym = s.symbol.replace("=X", "")
-        # USD est au début (ex: USDJPY)
         is_usd_base = clean_sym.startswith("USD")
-        # USD est à la fin (ex: EURUSD)
         is_usd_quote = clean_sym.endswith("USD")
         
         block = False
-        reason = ""
+        reasons = []
         
+        # Validation DXY
         if dxy_trend == "BULLISH":
-            # Le Dollar est fort -> bloquer la vente d'USD (BUY EURUSD / SELL USDJPY)
             if is_usd_quote and s.signal == "BUY":
                 block = True
-                reason = "Dollar (DXY) haussier"
+                reasons.append("Dollar (DXY) haussier")
             elif is_usd_base and s.signal == "SELL":
                 block = True
-                reason = "Dollar (DXY) haussier"
+                reasons.append("Dollar (DXY) haussier")
         elif dxy_trend == "BEARISH":
-            # Le Dollar est faible -> bloquer l'achat d'USD (SELL EURUSD / BUY USDJPY)
             if is_usd_quote and s.signal == "SELL":
                 block = True
-                reason = "Dollar (DXY) baissier"
+                reasons.append("Dollar (DXY) baissier")
             elif is_usd_base and s.signal == "BUY":
                 block = True
-                reason = "Dollar (DXY) baissier"
+                reasons.append("Dollar (DXY) baissier")
+                
+        # Validation Yield Guard
+        if yield_trend == "BULLISH":
+            if is_usd_quote and s.signal == "BUY":
+                block = True
+                reasons.append("Taux US10Y haussiers")
+            elif is_usd_base and s.signal == "SELL":
+                block = True
+                reasons.append("Taux US10Y haussiers")
+        elif yield_trend == "BEARISH":
+            if is_usd_quote and s.signal == "SELL":
+                block = True
+                reasons.append("Taux US10Y baissiers")
+            elif is_usd_base and s.signal == "BUY":
+                block = True
+                reasons.append("Taux US10Y baissiers")
                 
         if block:
-            logger.info(f"🛡️ DXY Guard Block | Signal {s.pair_name} {s.signal} bloqué car : {reason}")
-            # Envoyer une notification Telegram du blocage
+            block_msg = " + ".join(reasons)
+            logger.info(f"🛡️ DXY/Yield Guard Block | Signal {s.pair_name} {s.signal} bloqué car : {block_msg}")
             from src.telegram_bot import send_message
-            send_message(f"🛡️ *DXY Correlation Guard*\nSignal {s.pair_name} {s.signal} bloqué car :\n_{reason}_")
+            send_message(f"🛡️ *DXY/Yield Guard*\nSignal {s.pair_name} {s.signal} bloqué car :\n_{block_msg}_")
         else:
             filtered_strong_signals.append(s)
             
     strong_signals = filtered_strong_signals
+
+    # ── Filtre de Corrélation Croisée ──
+    # Si deux paires très corrélées (ex EURUSD et GBPUSD) ont des signaux opposés, on annule les deux !
+    correlated_pairs = [
+        ("EURUSD=X", "GBPUSD=X"),
+    ]
+    blocked_by_correlation = set()
+    for p1, p2 in correlated_pairs:
+        s1 = next((s for s in strong_signals if s.symbol == p1), None)
+        s2 = next((s for s in strong_signals if s.symbol == p2), None)
+        if s1 and s2:
+            if s1.signal != s2.signal:
+                logger.info(f"🛡️ Cross-Correlation | Signaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Annulation mutuelle.")
+                from src.telegram_bot import send_message
+                send_message(f"🛡️ *Cross-Correlation Guard*\nSignaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Les deux signaux sont annulés par sécurité.")
+                blocked_by_correlation.add(p1)
+                blocked_by_correlation.add(p2)
+                
+    strong_signals = [s for s in strong_signals if s.symbol not in blocked_by_correlation]
     strong_signals.sort(key=lambda s: s.confidence, reverse=True)
     
     # Exporter au format JSON pour le site web (GitHub Pages)
