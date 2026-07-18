@@ -37,6 +37,13 @@ import time
 def main():
     logger.info("=== GitHub Actions — Analyse Forex démarrée ===")
 
+    # Le Forex est fermé le week-end (samedi=5, dimanche=6 en UTC)
+    from datetime import datetime, timezone
+    now_utc = datetime.now(timezone.utc)
+    if now_utc.weekday() >= 5:
+        logger.info("💤 Marché Forex fermé le week-end (UTC). Arrêt de l'analyse.")
+        sys.exit(0)
+
     if not config.TELEGRAM_BOT_TOKEN or not config.TELEGRAM_CHAT_ID:
         logger.error("TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID manquant !")
         sys.exit(1)
