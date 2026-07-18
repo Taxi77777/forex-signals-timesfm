@@ -180,8 +180,71 @@ def main():
             logger.error(f"Erreur {pair_name}: {e}")
             continue
 
+    # ── DXY (US Dollar Index) Guard pour le Forex ──
+    dxy_trend = "NEUTRAL"
+    from datetime import datetime, timezone
+    is_weekend = datetime.now(timezone.utc).weekday() >= 5
+    if not is_weekend:
+        try:
+            import yfinance as yf
+            dxy_df = yf.download("DX-Y.NYB", period="10d", interval="1h", progress=False)
+            if dxy_df is not None and not dxy_df.empty:
+                dxy_df_ind = compute_all_indicators(dxy_df)
+                if not dxy_df_ind.empty:
+                    dxy_last = dxy_df_ind.iloc[-1]
+                    dxy_ema20 = float(dxy_last["ema20"])
+                    dxy_ema50 = float(dxy_last["ema50"])
+                    dxy_st_dir = int(dxy_last["supertrend_dir"])
+                    
+                    if dxy_ema20 > dxy_ema50 and dxy_st_dir == 1:
+                        dxy_trend = "BULLISH"
+                    elif dxy_ema20 < dxy_ema50 and dxy_st_dir == -1:
+                        dxy_trend = "BEARISH"
+            logger.info(f"📊 Macro Guard | Dollar Index (DXY 1H) : {dxy_trend}")
+        except Exception as e:
+            logger.error(f"Erreur calcul DXY Guard : {e}")
+
     # Envoi Telegram (uniquement les signaux forts triés par confiance décroissante)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
+    
+    # Filtrer avec le DXY Correlation Guard
+    filtered_strong_signals = []
+    for s in strong_signals:
+        clean_sym = s.symbol.replace("=X", "")
+        # USD est au début (ex: USDJPY)
+        is_usd_base = clean_sym.startswith("USD")
+        # USD est à la fin (ex: EURUSD)
+        is_usd_quote = clean_sym.endswith("USD")
+        
+        block = False
+        reason = ""
+        
+        if dxy_trend == "BULLISH":
+            # Le Dollar est fort -> bloquer la vente d'USD (BUY EURUSD / SELL USDJPY)
+            if is_usd_quote and s.signal == "BUY":
+                block = True
+                reason = "Dollar (DXY) haussier"
+            elif is_usd_base and s.signal == "SELL":
+                block = True
+                reason = "Dollar (DXY) haussier"
+        elif dxy_trend == "BEARISH":
+            # Le Dollar est faible -> bloquer l'achat d'USD (SELL EURUSD / BUY USDJPY)
+            if is_usd_quote and s.signal == "SELL":
+                block = True
+                reason = "Dollar (DXY) baissier"
+            elif is_usd_base and s.signal == "BUY":
+                block = True
+                reason = "Dollar (DXY) baissier"
+                
+        if block:
+            logger.info(f"🛡️ DXY Guard Block | Signal {s.pair_name} {s.signal} bloqué car : {reason}")
+            # Envoyer une notification Telegram du blocage
+            from src.telegram_bot import send_message
+            send_message(f"🛡️ *DXY Correlation Guard*\nSignal {s.pair_name} {s.signal} bloqué car :\n_{reason}_")
+        else:
+            filtered_strong_signals.append(s)
+            
+    strong_signals = filtered_strong_signals
     strong_signals.sort(key=lambda s: s.confidence, reverse=True)
     
     # Exporter au format JSON pour le site web (GitHub Pages)

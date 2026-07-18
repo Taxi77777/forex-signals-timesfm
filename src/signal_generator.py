@@ -266,10 +266,27 @@ def generate_signal(
 
     # ─── Niveaux TP / SL basés sur l'ATR ───────────────────────────────────────
     atr = ind["atr"]
-    if final_signal == "BUY":
-        take_profit = round(current_price + atr * config.TAKE_PROFIT_FACTOR, 5)
-    elif final_signal == "SELL":
-        take_profit = round(current_price - atr * config.TAKE_PROFIT_FACTOR, 5)
+    
+    # Nombre exact de modèles d'IA en accord avec la direction du consensus
+    votes_count = list(dirs.values()).count(final_signal) if final_signal in ["BUY", "SELL"] else 0
+    
+    if final_signal in ["BUY", "SELL"]:
+        if votes_count >= 5:
+            tp_mult_factor = 4.0
+            tp_desc = "Consensus 5/5 IA (Max)"
+        elif votes_count == 4:
+            tp_mult_factor = 3.5
+            tp_desc = "Consensus 4/5 IA (Standard)"
+        else:
+            tp_mult_factor = 2.5
+            tp_desc = "Consensus 3/5 IA (Prudent)"
+            
+        logger.info(f"🎯 {pair_name} | TP Adaptatif choisi : {tp_mult_factor}x ATR ({tp_desc})")
+        
+        if final_signal == "BUY":
+            take_profit = round(current_price + atr * tp_mult_factor, 5)
+        else:
+            take_profit = round(current_price - atr * tp_mult_factor, 5)
     else:
         take_profit = current_price
 
