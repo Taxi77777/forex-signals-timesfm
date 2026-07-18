@@ -286,8 +286,6 @@ def main():
         if block:
             block_msg = " + ".join(reasons)
             logger.info(f"🛡️ DXY/Yield Guard Block | Signal {s.pair_name} {s.signal} bloqué car : {block_msg}")
-            from src.telegram_bot import send_message
-            send_message(f"🛡️ *DXY/Yield Guard*\nSignal {s.pair_name} {s.signal} bloqué car :\n_{block_msg}_")
         else:
             filtered_strong_signals.append(s)
             
@@ -305,8 +303,6 @@ def main():
         if s1 and s2:
             if s1.signal != s2.signal:
                 logger.info(f"🛡️ Cross-Correlation | Signaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Annulation mutuelle.")
-                from src.telegram_bot import send_message
-                send_message(f"🛡️ *Cross-Correlation Guard*\nSignaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Les deux signaux sont annulés par sécurité.")
                 blocked_by_correlation.add(p1)
                 blocked_by_correlation.add(p2)
                 
