@@ -29,8 +29,8 @@ import config
 from src.data_fetcher      import fetch_all_pairs, prepare_timesfm_input
 from src.indicators        import compute_all_indicators
 from src.timesfm_predictor import predict_timesfm
-from src.signal_generator  import generate_signal
-from src.telegram_bot      import send_signals_summary, send_signal
+from src.signal_generator  import generate_signal, TradingSignal
+from src.telegram_bot      import send_signals_summary, send_signal, send_message
 
 import time
 
@@ -249,6 +249,167 @@ def main():
 
     # Envoi Telegram (uniquement les signaux forts triés par confiance décroissante)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
+
+    # ── Gestionnaire de Pullback (Wait for Pullback logic) ───────────────────
+    import os
+    import json
+    import time
+
+    pullbacks_file = "pending_pullbacks.json"
+    pending_pullbacks = []
+    if os.path.exists(pullbacks_file):
+        try:
+            with open(pullbacks_file, "r", encoding="utf-8") as f:
+                pending_pullbacks = json.load(f)
+        except Exception as e:
+            logger.error(f"Erreur chargement pullbacks : {e}")
+
+    active_pullbacks = []
+    completed_signals = []
+    limit_pct = getattr(config, "MAX_EMA_EXTENSION_PCT", 0.15)
+
+    # 1. Vérifier les pullbacks existants dans la file
+    for p in pending_pullbacks:
+        # Expiration (2h = 7200s)
+        if time.time() - p["timestamp"] >= 7200:
+            logger.info(f"⏳ Pullback expiré pour {p['pair_name']} {p['signal']}")
+            send_message(f"⏳ *Pullback expiré (Timeout 2h)*\nSignal {p['pair_name']} {p['signal']} annulé.")
+            continue
+
+        # Invalidation par un nouveau signal inverse dans la passe actuelle
+        inverse_detected = False
+        for s in signals:
+            if s.symbol == p["symbol"] and s.is_strong and s.signal != "HOLD" and s.signal != p["signal"]:
+                inverse_detected = True
+                break
+        if inverse_detected:
+            logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} par un signal inverse")
+            send_message(f"❌ *Pullback invalidé*\nLe signal d'origine {p['pair_name']} {p['signal']} est annulé suite à une inversion de tendance.")
+            continue
+
+        # Vérification du pullback réel
+        df_ind = ind_map.get(p["symbol"])
+        if df_ind is not None and not df_ind.empty:
+            last_row = df_ind.iloc[-1]
+            cur_price = float(last_row["Close"])
+            ema20 = float(last_row["ema20"])
+            ema50 = float(last_row["ema50"])
+            extension_pct = (cur_price - ema20) / ema20 * 100
+
+            triggered = False
+            invalidated = False
+            reason = ""
+
+            if p["signal"] == "BUY":
+                if cur_price < ema50:
+                    invalidated = True
+                    reason = "cassure de l'EMA50 (tendance baissière)"
+                elif extension_pct <= limit_pct:
+                    triggered = True
+            elif p["signal"] == "SELL":
+                if cur_price > ema50:
+                    invalidated = True
+                    reason = "cassure de l'EMA50 (tendance haussière)"
+                elif extension_pct >= -limit_pct:
+                    triggered = True
+
+            if invalidated:
+                logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} : {reason}")
+                send_message(f"❌ *Pullback invalidé*\nSignal {p['pair_name']} {p['signal']} annulé : {reason}.")
+                continue
+
+            if triggered:
+                logger.info(f"🎯 Pullback complété pour {p['pair_name']} {p['signal']} à {cur_price}")
+                send_message(
+                    f"📥 *Pullback validé - Signal Forex actif* 📥\n"
+                    f"Pair : *{p['pair_name']}* | Direction : *{p['signal']}*\n"
+                    f"Entrée au pullback : {cur_price:.5f} (EMA20: {ema20:.5f})\n"
+                    f"Confiance d'origine : {p['confidence']}%\n"
+                    f"TP : {p['take_profit']:.5f}"
+                )
+                
+                triggered_sig = TradingSignal(
+                    symbol=p["symbol"],
+                    pair_name=p["pair_name"],
+                    signal=p["signal"],
+                    confidence=p["confidence"],
+                    current_price=round(cur_price, 5),
+                    take_profit=p["take_profit"],
+                    stop_loss=p["stop_loss"],
+                    tp_pct=p["tp_pct"],
+                    sl_pct=p["sl_pct"],
+                    rsi=p["rsi"],
+                    rsi_status=p["rsi_status"],
+                    macd_trend=p["macd_trend"],
+                    ema_trend=p["ema_trend"],
+                    bb_position=p["bb_position"],
+                    atr=p["atr"],
+                    forecast_dir=p["forecast_dir"],
+                    forecast_4h=p["forecast_4h"],
+                    forecast_24h=p["forecast_24h"],
+                    is_strong=True,
+                    fisher=p["fisher"],
+                    fisher_status=p["fisher_status"],
+                    is_extended=False
+                )
+                completed_signals.append(triggered_sig)
+            else:
+                active_pullbacks.append(p)
+        else:
+            active_pullbacks.append(p)
+
+    # 2. Traiter les nouveaux signaux de la passe actuelle
+    immediate_signals = []
+    for s in strong_signals:
+        if s.is_extended:
+            if not any(p["symbol"] == s.symbol for p in active_pullbacks):
+                df_ind = ind_map.get(s.symbol)
+                last_row = df_ind.iloc[-1] if df_ind is not None else None
+                ema20_val = float(last_row["ema20"]) if last_row is not None else 0.0
+                
+                new_p = {
+                    "symbol": s.symbol,
+                    "pair_name": s.pair_name,
+                    "signal": s.signal,
+                    "confidence": s.confidence,
+                    "current_price": s.current_price,
+                    "take_profit": s.take_profit,
+                    "stop_loss": s.stop_loss,
+                    "tp_pct": s.tp_pct,
+                    "sl_pct": s.sl_pct,
+                    "rsi": s.rsi,
+                    "rsi_status": s.rsi_status,
+                    "macd_trend": s.macd_trend,
+                    "ema_trend": s.ema_trend,
+                    "bb_position": s.bb_position,
+                    "atr": s.atr,
+                    "forecast_dir": s.forecast_dir,
+                    "forecast_4h": s.forecast_4h,
+                    "forecast_24h": s.forecast_24h,
+                    "fisher": s.fisher,
+                    "fisher_status": s.fisher_status,
+                    "timestamp": time.time(),
+                }
+                active_pullbacks.append(new_p)
+                logger.info(f"⏳ Nouveau signal {s.pair_name} {s.signal} mis en attente de pullback")
+                send_message(
+                    f"⏳ *Signal Forex détecté (En attente de Pullback)* ⏳\n"
+                    f"Pair : *{s.pair_name}* | Direction : *{s.signal}* (Confiance: {s.confidence}%)\n"
+                    f"Prix actuel : {s.current_price:.5f} (Trop étendu par rapport à l'EMA20)\n"
+                    f"Seuil d'entrée souhaité : <= +{limit_pct}% de l'EMA20 (EMA20 actuelle : {ema20_val:.5f})"
+                )
+        else:
+            immediate_signals.append(s)
+
+    # Sauvegarder la file d'attente des pullbacks
+    try:
+        with open(pullbacks_file, "w", encoding="utf-8") as f:
+            json.dump(active_pullbacks, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        logger.error(f"Erreur sauvegarde pullbacks : {e}")
+
+    # strong_signals contient maintenant uniquement les signaux immédiats + les pullbacks complétés de ce scan
+    strong_signals = immediate_signals + completed_signals
     
     # Si hors session, on vide les signaux forts
     if not is_session_active:
