@@ -89,6 +89,7 @@ def generate_signal(
     lagllama_predictions: np.ndarray | None = None,
     granite_predictions: np.ndarray | None = None,
     df_1h: pd.DataFrame | None = None,
+    df_4h: pd.DataFrame | None = None,
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
@@ -110,6 +111,15 @@ def generate_signal(
         adx = float(last_row["adx"])
         if adx < 15:
             logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 15) → Signal annulé")
+            return None
+
+    # ── Filtre de Volatilité ATR (Anti-Flat / Accélération) ───────────────────
+    if "atr" in df_with_indicators.columns and len(df_with_indicators) >= 100:
+        atr_series = df_with_indicators["atr"]
+        current_atr = float(atr_series.iloc[-1])
+        atr_ma = float(atr_series.rolling(window=100).mean().iloc[-1])
+        if atr_ma > 0 and current_atr < atr_ma * 0.80:
+            logger.info(f"⏳ Filtre Volatilité ATR actif sur {symbol} (ATR actuel: {current_atr:.5f} < 80% de la moyenne 100p: {atr_ma:.5f}) → Signal annulé")
             return None
 
     ind = get_indicator_summary(df_with_indicators)
@@ -279,6 +289,39 @@ def generate_signal(
             
             if final_signal != "HOLD":
                 logger.info(f"✅ Filtre Multi-Timeframe valide sur {symbol} (1h EMA alignee & 1h Supertrend en phase)")
+
+    # FILTRE MULTI-TIMEFRAME LONG TERME (TENDANCE EMA 4H + SUPERTREND 4H)
+    if final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty:
+        from src.indicators import compute_all_indicators
+        df_4h_ind = compute_all_indicators(df_4h)
+        if not df_4h_ind.empty:
+            last_4h = df_4h_ind.iloc[-1]
+            ema20_4h = float(last_4h["ema20"])
+            ema50_4h = float(last_4h["ema50"])
+            st_dir_4h = int(last_4h["supertrend_dir"])  # 1=haussier, -1=baissier
+            
+            # 1. Validation EMA Tendance 4h
+            if final_signal == "BUY" and ema20_4h < ema50_4h:
+                logger.info(f"⏳ Filtre Tendance 4H actif sur {symbol} (4h EMA20 < EMA50) -> Signal BUY annule")
+                final_signal = "HOLD"
+                confidence = 50
+            elif final_signal == "SELL" and ema20_4h > ema50_4h:
+                logger.info(f"⏳ Filtre Tendance 4H actif sur {symbol} (4h EMA20 > EMA50) -> Signal SELL annule")
+                final_signal = "HOLD"
+                confidence = 50
+            
+            # 2. Validation Supertrend 4h
+            elif final_signal == "BUY" and st_dir_4h == -1:
+                logger.info(f"⏳ Filtre Supertrend 4H actif sur {symbol} (tendance 4h baissiere) -> Signal BUY annule")
+                final_signal = "HOLD"
+                confidence = 50
+            elif final_signal == "SELL" and st_dir_4h == 1:
+                logger.info(f"⏳ Filtre Supertrend 4H actif sur {symbol} (tendance 4h haussiere) -> Signal SELL annule")
+                final_signal = "HOLD"
+                confidence = 50
+            
+            if final_signal != "HOLD":
+                logger.info(f"✅ Filtre Multi-Timeframe H4 valide sur {symbol} (4h EMA alignee & 4h Supertrend en phase)")
 
     # ─── Niveaux TP / SL basés sur l'ATR ───────────────────────────────────────
     atr = ind["atr"]

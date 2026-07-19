@@ -53,6 +53,8 @@ def main():
     all_data = fetch_all_pairs()
     logger.info("Téléchargement des données 1h pour le filtre de tendance...")
     all_data_1h = fetch_all_pairs(period="30d", interval="1h")
+    logger.info("Téléchargement des données 4h pour le filtre de tendance majeure...")
+    all_data_4h = fetch_all_pairs(period="60d", interval="4h")
 
     if not all_data:
         logger.error("Aucune donnée récupérée")
@@ -180,6 +182,7 @@ def main():
                 ai_preds["lla"].get(symbol),
                 ai_preds["gra"].get(symbol),
                 df_1h=all_data_1h.get(symbol) if all_data_1h else None,
+                df_4h=all_data_4h.get(symbol) if all_data_4h else None,
             )
             if signal:
                 signals.append(signal)
