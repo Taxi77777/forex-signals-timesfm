@@ -206,6 +206,7 @@ def main():
             import yfinance as yf
             dxy_df = yf.download("DX-Y.NYB", period="10d", interval="1h", progress=False)
             if dxy_df is not None and not dxy_df.empty:
+                dxy_df.columns = [c.lower() for c in dxy_df.columns]
                 dxy_df_ind = compute_all_indicators(dxy_df)
                 if not dxy_df_ind.empty:
                     dxy_last = dxy_df_ind.iloc[-1]
@@ -228,6 +229,7 @@ def main():
             import yfinance as yf
             tnx_df = yf.download("^TNX", period="10d", interval="1h", progress=False)
             if tnx_df is not None and not tnx_df.empty:
+                tnx_df.columns = [c.lower() for c in tnx_df.columns]
                 tnx_df_ind = compute_all_indicators(tnx_df)
                 if not tnx_df_ind.empty:
                     tnx_last = tnx_df_ind.iloc[-1]
