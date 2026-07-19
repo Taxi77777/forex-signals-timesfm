@@ -231,6 +231,22 @@ def generate_signal(
     if confidence < config.MIN_CONFIDENCE and final_signal != "HOLD":
         final_signal = "HOLD"
 
+    # FILTRE D'EXTENSION EMA20 (Structure du Chart)
+    # Évite d'acheter ou de vendre si le prix s'est déjà trop éloigné de la moyenne (EMA20 15m).
+    if final_signal in ["BUY", "SELL"]:
+        ema20 = ind.get("ema20")
+        if ema20 and ema20 > 0:
+            extension_pct = (current_price - ema20) / ema20 * 100
+            limit_pct = getattr(config, "MAX_EMA_EXTENSION_PCT", 0.15)
+            if final_signal == "BUY" and extension_pct > limit_pct:
+                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop haut par rapport à EMA20 15m : +{extension_pct:.3f}% > {limit_pct}%) -> Signal BUY annule")
+                final_signal = "HOLD"
+                confidence = 50
+            elif final_signal == "SELL" and extension_pct < -limit_pct:
+                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop bas par rapport à EMA20 15m : {extension_pct:.3f}% < -{limit_pct}%) -> Signal SELL annule")
+                final_signal = "HOLD"
+                confidence = 50
+
     # FILTRE MULTI-TIMEFRAME (TENDANCE EMA 1H + SUPERTREND 1H)
     if final_signal in ["BUY", "SELL"] and df_1h is not None and not df_1h.empty:
         from src.indicators import compute_all_indicators
