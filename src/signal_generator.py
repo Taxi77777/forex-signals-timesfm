@@ -258,7 +258,7 @@ def generate_signal(
                 is_extended = True
 
     # FILTRE MULTI-TIMEFRAME (TENDANCE EMA 1H + SUPERTREND 1H)
-    if final_signal in ["BUY", "SELL"] and df_1h is not None and not df_1h.empty:
+    if getattr(config, "ENABLE_MTF_FILTER", True) and final_signal in ["BUY", "SELL"] and df_1h is not None and not df_1h.empty:
         from src.indicators import compute_all_indicators
         df_1h_ind = compute_all_indicators(df_1h)
         if not df_1h_ind.empty:
@@ -291,7 +291,7 @@ def generate_signal(
                 logger.info(f"✅ Filtre Multi-Timeframe valide sur {symbol} (1h EMA alignee & 1h Supertrend en phase)")
 
     # FILTRE MULTI-TIMEFRAME LONG TERME (TENDANCE EMA 4H + SUPERTREND 4H)
-    if final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty:
+    if getattr(config, "ENABLE_MTF_FILTER", True) and final_signal in ["BUY", "SELL"] and df_4h is not None and not df_4h.empty:
         from src.indicators import compute_all_indicators
         df_4h_ind = compute_all_indicators(df_4h)
         if not df_4h_ind.empty:
