@@ -40,6 +40,8 @@ class TradingSignal:
     fisher_status: str            # Fisher status description
     is_extended:   bool = False
     timeframe:     str = "15m"
+    smc_zone:      str = "N/A"
+    is_ote:        bool = False
 
 
 def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02) -> str:
@@ -363,6 +365,15 @@ def generate_signal(
     tp_pct      = round(abs(take_profit - current_price) / current_price * 100, 3)
     sl_pct      = 0.0
 
+    # Calcul structure SMC & OTE
+    from src.smc_filter import get_smc_ote_status
+    smc = get_smc_ote_status(df, final_signal)
+    smc_zone = "N/A"
+    is_ote = False
+    if smc:
+        smc_zone = smc["zone"]
+        is_ote = smc["is_ote"]
+
     signal = TradingSignal(
         symbol=        symbol,
         pair_name=     pair_name,
@@ -387,6 +398,8 @@ def generate_signal(
         fisher_status= ind["fisher_status"],
         is_extended=   is_extended,
         timeframe=     timeframe,
+        smc_zone=      smc_zone,
+        is_ote=        is_ote,
     )
 
     logger.info(
