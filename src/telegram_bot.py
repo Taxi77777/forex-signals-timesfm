@@ -65,6 +65,21 @@ def format_signal_message(signal: TradingSignal) -> str:
     sl_sign = "-" if signal.signal == "BUY" else "+"
     sl_text = "Aucun" if signal.stop_loss == "Aucun" else f"`{signal.stop_loss}` ({sl_sign}{signal.sl_pct}%)"
 
+    # ── Optionnel : Données Macroéconomiques ──
+    from src.macro_filter import MacroFilter
+    macro = MacroFilter()
+    info = macro.get_macro_info(signal.symbol)
+    macro_text = ""
+    if info:
+        macro_text = (
+            f"📊 *Données Macro* :\n"
+            f"  • Intérêts : {info['base']} ({info['rate_base']:.2f}%) vs {info['quote']} ({info['rate_quote']:.2f}%)\n"
+            f"  • Différentiel : *{info['rate_diff']:+.2f}%*\n"
+            f"  • Inflation : {info['base']} ({info['inf_base']:.2f}%) vs {info['quote']} ({info['inf_quote']:.2f}%)\n"
+            f"  • Croissance PIB : {info['base']} ({info['gdp_base']:+.2f}%) vs {info['quote']} ({info['gdp_quote']:+.2f}%)\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        )
+
     tf_tag = f" ({signal.timeframe.upper()})" if hasattr(signal, "timeframe") else ""
     return (
         f"{emoji} *SIGNAL FOREX — {signal.pair_name}{tf_tag}*{strong_tag}\n"
@@ -81,6 +96,7 @@ def format_signal_message(signal: TradingSignal) -> str:
         f"EMA 20/50: {signal.ema_trend}\n"
         f"Bollinger : {signal.bb_position}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        f"{macro_text}"
         f"⏰ {time_str} (Paris)\n"
         f"⚠️ _Usage éducatif uniquement_"
     )

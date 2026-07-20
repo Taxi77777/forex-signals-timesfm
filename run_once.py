@@ -434,7 +434,11 @@ def main():
         logger.info(f"⏳ Session Filter | Hors sessions majeures (Heure UTC : {now_utc.strftime('%H:%M')}). Filtre actif.")
         strong_signals = []
     
-    # Filtrer avec le DXY et Yield Correlation Guards
+    # Filtrer avec le DXY, Yield Correlation et Macro Guards
+    from src.macro_filter import MacroFilter
+    macro_filter = MacroFilter()
+    macro_filter.initialize()
+
     filtered_strong_signals = []
     for s in strong_signals:
         clean_sym = s.symbol.replace("=X", "")
@@ -443,6 +447,13 @@ def main():
         
         block = False
         reasons = []
+
+        # Validation Macro Guard (Carry Trade)
+        is_allowed, macro_reason = macro_filter.check_macro_guard(s.symbol, s.signal)
+        logger.info(f"📊 Macro Guard | {s.pair_name} ({s.timeframe}) : {macro_reason}")
+        if not is_allowed:
+            block = True
+            reasons.append(macro_reason)
         
         # Validation DXY
         if getattr(config, "ENABLE_DXY_GUARD", False):
@@ -522,7 +533,8 @@ def main():
                 "rsi": s.rsi,
                 "macd_trend": s.macd_trend,
                 "forecast_dir": s.forecast_dir,
-                "timeframe": s.timeframe
+                "timeframe": s.timeframe,
+                "macro_info": macro_filter.get_macro_info(s.symbol)
             } for s in strong_signals
         ]
     }
