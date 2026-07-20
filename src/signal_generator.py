@@ -367,7 +367,7 @@ def generate_signal(
 
     # Calcul structure SMC & OTE
     from src.smc_filter import get_smc_ote_status
-    smc = get_smc_ote_status(df, final_signal)
+    smc = get_smc_ote_status(df_with_indicators, final_signal)
     smc_zone = "N/A"
     is_ote = False
     if smc:
