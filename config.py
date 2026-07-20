@@ -121,8 +121,8 @@ TAKE_PROFIT_FACTOR  = 3.5     # TP = 3.5x l'ATR (laisse respirer en 15m)
 STOP_LOSS_FACTOR    = 3.0     # SL = 3.0x l'ATR (laisse respirer en 15m)
 
 # ─── Seuils de confiance ───────────────────────────────────────────────────────
-MIN_CONFIDENCE      = 60      # Signal ignoré si confiance < 60%
-STRONG_SIGNAL       = 60      # Signal fort si confiance >= 60%
+MIN_CONFIDENCE      = 75      # Signal ignoré si confiance < 75%
+STRONG_SIGNAL       = 75      # Signal fort si confiance >= 75%
 MAX_EMA_EXTENSION_PCT = 0.0   # Écart max toléré avec EMA20 15m (%) (0.0 = Forcer le pullback strict)
 
 # ─── Guards de Marché (Filtres de Tendance) ───────────────────────────────────
