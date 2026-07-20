@@ -7,6 +7,10 @@ import logging
 import os
 import sys
 import json
+import gc
+import time
+from datetime import datetime, timezone
+import yfinance as yf
 
 # Forcer l'encodage utf-8 pour éviter les erreurs d'affichage d'emojis sous Windows
 try:
@@ -33,13 +37,19 @@ from src.timesfm_predictor import predict_timesfm
 from src.signal_generator  import generate_signal, TradingSignal
 from src.telegram_bot      import send_signals_summary, send_signal, send_message
 
-import time
+def get_period_for_interval(interval_str: str) -> str:
+    if interval_str == "5m":
+        return "5d"
+    elif interval_str == "15m":
+        return "10d"
+    elif interval_str == "30m":
+        return "20d"
+    return "30d"
 
 def main():
-    logger.info("=== GitHub Actions — Analyse Forex démarrée ===")
+    logger.info("=== GitHub Actions — Analyse Forex Multi-Timeframe démarrée ===")
 
     # Le Forex est fermé le week-end (samedi=5, dimanche=6 en UTC)
-    from datetime import datetime, timezone
     now_utc = datetime.now(timezone.utc)
     if now_utc.weekday() >= 5:
         logger.info("💤 Marché Forex fermé le week-end (UTC). Arrêt de l'analyse.")
@@ -49,30 +59,33 @@ def main():
         logger.error("TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID manquant !")
         sys.exit(1)
 
-    # Récupération des données
-    logger.info("Téléchargement des données Forex...")
-    all_data = fetch_all_pairs()
-    logger.info("Téléchargement des données 1h pour le filtre de tendance...")
+    # Récupération des données trend guards
+    logger.info("Téléchargement des données Forex 1h pour le filtre de tendance...")
     all_data_1h = fetch_all_pairs(period="30d", interval="1h")
     logger.info("Téléchargement des données 4h pour le filtre de tendance majeure...")
     all_data_4h = fetch_all_pairs(period="60d", interval="4h")
 
-    if not all_data:
-        logger.error("Aucune donnée récupérée")
-        sys.exit(1)
+    # Définition des intervalles à analyser
+    intervals = ["5m", "15m", "30m"]
+    all_data_by_interval = {}
+
+    for interval in intervals:
+        logger.info(f"Téléchargement des données Forex pour l'intervalle {interval}...")
+        period = get_period_for_interval(interval)
+        all_data_by_interval[interval] = fetch_all_pairs(period=period, interval=interval)
 
     # ── APPRENTISSAGE CONTINU : vérifier les prédictions d'il y a 1h ──────────
-    import time as _time
     from src.track_record import (load_track, save_track, record_result,
                                   load_pending, save_pending, accuracy_summary)
     track   = load_track(force=True)
     pending = load_pending()
-    now_ts  = _time.time()
+    now_ts  = time.time()
     matured = [pr for pr in pending if now_ts - pr["ts"] >= 3600]   # horizon 1h atteint
     waiting = [pr for pr in pending if now_ts - pr["ts"] < 3600]
     verified = 0
     for pr in matured:
-        df_p = all_data.get(pr["symbol"])
+        interval_p = pr.get("timeframe", "15m")
+        df_p = all_data_by_interval.get(interval_p, {}).get(pr["symbol"])
         if df_p is None or df_p.empty:
             continue
         cur = float(df_p["Close"].iloc[-1])
@@ -91,109 +104,116 @@ def main():
     logger.info(f"Devises actuellement bloquées par les annonces écon.: {blocked_currencies}")
 
     # ── Phase A : filtre calendrier + indicateurs + séries de prix ────────────
-    import gc
-    series_map, ind_map = {}, {}
-    for symbol, df in all_data.items():
-        pair_name = config.PAIR_NAMES.get(symbol, symbol)
+    series_map_multi = {}
+    ind_map_multi = {}
 
-        # Extraire les devises impliquées dans la paire
-        clean_sym = symbol.replace("=X", "")
-        currencies = [clean_sym[:3], clean_sym[3:]] if len(clean_sym) == 6 else ["USD", clean_sym]
+    for interval in intervals:
+        all_data = all_data_by_interval[interval]
+        for symbol, df in all_data.items():
+            pair_name = config.PAIR_NAMES.get(symbol, symbol)
 
-        # Vérifier si l'une des devises est bloquée par le calendrier économique
-        is_blocked = False
-        for cur in currencies:
-            if cur.upper() in blocked_currencies:
-                logger.info(f"🚫 Analyse suspendue pour {pair_name} : la devise {cur} est impactée par une annonce économique forte.")
-                is_blocked = True
-                break
+            # Extraire les devises impliquées dans la paire
+            clean_sym = symbol.replace("=X", "")
+            currencies = [clean_sym[:3], clean_sym[3:]] if len(clean_sym) == 6 else ["USD", clean_sym]
 
-        if is_blocked:
-            continue
+            # Vérifier si l'une des devises est bloquée par le calendrier économique
+            is_blocked = False
+            for cur in currencies:
+                if cur.upper() in blocked_currencies:
+                    logger.info(f"🚫 Analyse suspendue pour {pair_name} ({interval}) : la devise {cur} est impactée par une annonce économique forte.")
+                    is_blocked = True
+                    break
 
-        try:
-            df_ind = compute_all_indicators(df)
-            if df_ind.empty:
+            if is_blocked:
                 continue
-            ind_map[symbol]    = df_ind
-            series_map[symbol] = prepare_timesfm_input(df)
-        except Exception as e:
-            logger.error(f"Erreur indicateurs {pair_name}: {e}")
-            continue
+
+            try:
+                df_ind = compute_all_indicators(df)
+                if df_ind.empty:
+                    continue
+                ind_map_multi[(interval, symbol)] = df_ind
+                series_map_multi[(interval, symbol)] = prepare_timesfm_input(df)
+            except Exception as e:
+                logger.error(f"Erreur indicateurs {pair_name} ({interval}): {e}")
+                continue
 
     # ── Phase B : 5 passes IA séquentielles (chargement → prédictions → libération RAM) ──
-    ai_preds = {"tfm": {}, "cho": {}, "moi": {}, "lla": {}, "gra": {}}
+    ai_preds = {
+        "tfm": {}, "cho": {}, "moi": {}, "lla": {}, "gra": {}
+    }
 
     logger.info("── Passe 1/5 : Google TimesFM 2.5 ──")
     from src.timesfm_predictor import unload_timesfm
-    for sym, series in series_map.items():
-        ai_preds["tfm"][sym] = predict_timesfm(series)
+    for (interval, sym), series in series_map_multi.items():
+        ai_preds["tfm"][(interval, sym)] = predict_timesfm(series)
     unload_timesfm()
     gc.collect()
 
     logger.info("── Passe 2/5 : Amazon Chronos ──")
     from src.chronos_predictor import predict_chronos, unload_chronos
-    for sym, series in series_map.items():
-        ai_preds["cho"][sym] = predict_chronos(series)
+    for (interval, sym), series in series_map_multi.items():
+        ai_preds["cho"][(interval, sym)] = predict_chronos(series)
     unload_chronos()
     gc.collect()
 
     logger.info("── Passe 3/5 : Salesforce Moirai 2.0 ──")
     from src.moirai_predictor import predict_moirai, unload_moirai
-    for sym, series in series_map.items():
-        ai_preds["moi"][sym] = predict_moirai(series)
+    for (interval, sym), series in series_map_multi.items():
+        ai_preds["moi"][(interval, sym)] = predict_moirai(series)
     unload_moirai()
     gc.collect()
 
     logger.info("── Passe 4/5 : Lag-Llama ──")
     from src.lagllama_predictor import predict_lagllama, unload_lagllama
-    for sym, series in series_map.items():
-        ai_preds["lla"][sym] = predict_lagllama(series)
+    for (interval, sym), series in series_map_multi.items():
+        ai_preds["lla"][(interval, sym)] = predict_lagllama(series)
     unload_lagllama()
     gc.collect()
 
     logger.info("── Passe 5/5 : IBM Granite TTM ──")
     from src.granite_predictor import predict_granite, unload_granite
-    for sym, series in series_map.items():
-        ai_preds["gra"][sym] = predict_granite(series)
+    for (interval, sym), series in series_map_multi.items():
+        ai_preds["gra"][(interval, sym)] = predict_granite(series)
     unload_granite()
     gc.collect()
 
     # ── Enregistrer les prédictions du scan pour vérification future ─────────
     from src.signal_generator import _ai_direction
-    for sym, series in series_map.items():
+    for (interval, sym), series in series_map_multi.items():
         cur_price = float(series[-1])
         for key, mp in (("TFM", "tfm"), ("CHO", "cho"), ("MOI", "moi"), ("LLA", "lla"), ("GRA", "gra")):
-            d = _ai_direction(cur_price, ai_preds[mp].get(sym))
+            d = _ai_direction(cur_price, ai_preds[mp].get((interval, sym)))
             if d in ("BUY", "SELL"):
-                waiting.append({"ts": now_ts, "model": key, "symbol": sym, "dir": d, "price": cur_price})
+                waiting.append({
+                    "ts": now_ts, "model": key, "symbol": sym, "dir": d,
+                    "price": cur_price, "timeframe": interval
+                })
     save_pending(waiting)
     save_track(track)   # garantit l'existence du fichier pour le commit
 
     # ── Phase C : génération des signaux (consensus strict 5 IA) ─────────────
     signals = []
-    for symbol, df_ind in ind_map.items():
+    for (interval, symbol), df_ind in ind_map_multi.items():
         pair_name = config.PAIR_NAMES.get(symbol, symbol)
         try:
             signal = generate_signal(
                 symbol, df_ind,
-                ai_preds["tfm"].get(symbol),
-                ai_preds["cho"].get(symbol),
-                ai_preds["moi"].get(symbol),
-                ai_preds["lla"].get(symbol),
-                ai_preds["gra"].get(symbol),
+                ai_preds["tfm"].get((interval, symbol)),
+                ai_preds["cho"].get((interval, symbol)),
+                ai_preds["moi"].get((interval, symbol)),
+                ai_preds["lla"].get((interval, symbol)),
+                ai_preds["gra"].get((interval, symbol)),
                 df_1h=all_data_1h.get(symbol) if all_data_1h else None,
                 df_4h=all_data_4h.get(symbol) if all_data_4h else None,
+                timeframe=interval,
             )
             if signal:
                 signals.append(signal)
         except Exception as e:
-            logger.error(f"Erreur {pair_name}: {e}")
+            logger.error(f"Erreur {pair_name} ({interval}): {e}")
             continue
 
     # ── 1. Filtre de Session Majeure ──
-    from datetime import datetime, timezone
-    now_utc = datetime.now(timezone.utc)
     current_hour_utc = now_utc.hour
     is_weekend = now_utc.weekday() >= 5
     
@@ -204,7 +224,6 @@ def main():
     dxy_trend = "NEUTRAL"
     if not is_weekend and is_session_active:
         try:
-            import yfinance as yf
             ticker_dxy = yf.Ticker("DX-Y.NYB")
             dxy_df = ticker_dxy.history(period="10d", interval="1h")
             if dxy_df is not None and not dxy_df.empty:
@@ -228,7 +247,6 @@ def main():
     yield_trend = "NEUTRAL"
     if not is_weekend and is_session_active:
         try:
-            import yfinance as yf
             ticker_tnx = yf.Ticker("^TNX")
             tnx_df = ticker_tnx.history(period="10d", interval="1h")
             if tnx_df is not None and not tnx_df.empty:
@@ -252,7 +270,6 @@ def main():
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
 
     # ── Gestionnaire de Pullback (Wait for Pullback logic) ───────────────────
-
     pullbacks_file = "pending_pullbacks.json"
     pending_pullbacks = []
     if os.path.exists(pullbacks_file):
@@ -268,25 +285,26 @@ def main():
 
     # 1. Vérifier les pullbacks existants dans la file
     for p in pending_pullbacks:
+        p_tf = p.get("timeframe", "15m")
         # Expiration (2h = 7200s)
         if time.time() - p["timestamp"] >= 7200:
-            logger.info(f"⏳ Pullback expiré pour {p['pair_name']} {p['signal']}")
-            send_message(f"⏳ *Pullback expiré (Timeout 2h)*\nSignal {p['pair_name']} {p['signal']} annulé.")
+            logger.info(f"⏳ Pullback expiré pour {p['pair_name']} ({p_tf}) {p['signal']}")
+            send_message(f"⏳ *Pullback expiré (Timeout 2h)*\nSignal {p['pair_name']} ({p_tf}) {p['signal']} annulé.")
             continue
 
-        # Invalidation par un nouveau signal inverse dans la passe actuelle
+        # Invalidation par un nouveau signal inverse dans la passe actuelle (même timeframe)
         inverse_detected = False
         for s in signals:
-            if s.symbol == p["symbol"] and s.is_strong and s.signal != "HOLD" and s.signal != p["signal"]:
+            if s.symbol == p["symbol"] and s.timeframe == p_tf and s.is_strong and s.signal != "HOLD" and s.signal != p["signal"]:
                 inverse_detected = True
                 break
         if inverse_detected:
-            logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} par un signal inverse")
-            send_message(f"❌ *Pullback invalidé*\nLe signal d'origine {p['pair_name']} {p['signal']} est annulé suite à une inversion de tendance.")
+            logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} ({p_tf}) par un signal inverse")
+            send_message(f"❌ *Pullback invalidé*\nLe signal d'origine {p['pair_name']} ({p_tf}) {p['signal']} est annulé suite à une inversion de tendance.")
             continue
 
         # Vérification du pullback réel
-        df_ind = ind_map.get(p["symbol"])
+        df_ind = ind_map_multi.get((p_tf, p["symbol"]))
         if df_ind is not None and not df_ind.empty:
             last_row = df_ind.iloc[-1]
             cur_price = float(last_row["Close"])
@@ -312,15 +330,15 @@ def main():
                     triggered = True
 
             if invalidated:
-                logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} : {reason}")
-                send_message(f"❌ *Pullback invalidé*\nSignal {p['pair_name']} {p['signal']} annulé : {reason}.")
+                logger.info(f"⏳ Pullback invalidé pour {p['pair_name']} ({p_tf}) : {reason}")
+                send_message(f"❌ *Pullback invalidé*\nSignal {p['pair_name']} ({p_tf}) {p['signal']} annulé : {reason}.")
                 continue
 
             if triggered:
-                logger.info(f"🎯 Pullback complété pour {p['pair_name']} {p['signal']} à {cur_price}")
+                logger.info(f"🎯 Pullback complété pour {p['pair_name']} ({p_tf}) {p['signal']} à {cur_price}")
                 send_message(
                     f"📥 *Pullback validé - Signal Forex actif* 📥\n"
-                    f"Pair : *{p['pair_name']}* | Direction : *{p['signal']}*\n"
+                    f"Pair : *{p['pair_name']} ({p_tf.upper()})* | Direction : *{p['signal']}*\n"
                     f"Entrée au pullback : {cur_price:.5f} (EMA20: {ema20:.5f})\n"
                     f"Confiance d'origine : {p['confidence']}%\n"
                     f"TP : {p['take_profit']:.5f}"
@@ -348,7 +366,8 @@ def main():
                     is_strong=True,
                     fisher=p["fisher"],
                     fisher_status=p["fisher_status"],
-                    is_extended=False
+                    is_extended=False,
+                    timeframe=p_tf
                 )
                 completed_signals.append(triggered_sig)
             else:
@@ -360,8 +379,8 @@ def main():
     immediate_signals = []
     for s in strong_signals:
         if s.is_extended:
-            if not any(p["symbol"] == s.symbol for p in active_pullbacks):
-                df_ind = ind_map.get(s.symbol)
+            if not any(p["symbol"] == s.symbol and p.get("timeframe", "15m") == s.timeframe for p in active_pullbacks):
+                df_ind = ind_map_multi.get((s.timeframe, s.symbol))
                 last_row = df_ind.iloc[-1] if df_ind is not None else None
                 ema20_val = float(last_row["ema20"]) if last_row is not None else 0.0
                 
@@ -387,11 +406,12 @@ def main():
                     "fisher": s.fisher,
                     "fisher_status": s.fisher_status,
                     "timestamp": time.time(),
+                    "timeframe": s.timeframe
                 }
                 active_pullbacks.append(new_p)
-                logger.info(f"⏳ Nouveau signal {s.pair_name} {s.signal} mis en attente de pullback")
+                logger.info(f"⏳ Nouveau signal {s.pair_name} ({s.timeframe}) {s.signal} mis en attente de pullback")
                 send_message(
-                    f"⏳ *Signal Forex détecté (En attente de Pullback)* ⏳\n"
+                    f"⏳ *Signal Forex détecté (En attente de Pullback - {s.timeframe.upper()})* ⏳\n"
                     f"Pair : *{s.pair_name}* | Direction : *{s.signal}* (Confiance: {s.confidence}%)\n"
                     f"Prix actuel : {s.current_price:.5f} (Trop étendu par rapport à l'EMA20)\n"
                     f"Seuil d'entrée souhaité : <= +{limit_pct}% de l'EMA20 (EMA20 actuelle : {ema20_val:.5f})"
@@ -460,37 +480,35 @@ def main():
                 
         if block:
             block_msg = " + ".join(reasons)
-            logger.info(f"🛡️ DXY/Yield Guard Block | Signal {s.pair_name} {s.signal} bloqué car : {block_msg}")
-            from src.telegram_bot import send_message
-            send_message(f"🛡️ *DXY/Yield Guard*\nSignal {s.pair_name} {s.signal} bloqué car :\n_{block_msg}_", chat_id="375129602")
+            logger.info(f"🛡️ DXY/Yield Guard Block | Signal {s.pair_name} ({s.timeframe}) {s.signal} bloqué car : {block_msg}")
+            send_message(f"🛡️ *DXY/Yield Guard*\nSignal {s.pair_name} ({s.timeframe}) {s.signal} bloqué car :\n_{block_msg}_", chat_id="375129602")
         else:
             filtered_strong_signals.append(s)
             
     strong_signals = filtered_strong_signals
-
+ 
     # ── Filtre de Corrélation Croisée ──
-    # Si deux paires très corrélées (ex EURUSD et GBPUSD) ont des signaux opposés, on annule les deux !
+    # Si deux paires très corrélées (ex EURUSD et GBPUSD) ont des signaux opposés sur le même timeframe, on annule les deux !
     correlated_pairs = [
         ("EURUSD=X", "GBPUSD=X"),
     ]
     blocked_by_correlation = set()
     for p1, p2 in correlated_pairs:
-        s1 = next((s for s in strong_signals if s.symbol == p1), None)
-        s2 = next((s for s in strong_signals if s.symbol == p2), None)
-        if s1 and s2:
-            if s1.signal != s2.signal:
-                logger.info(f"🛡️ Cross-Correlation | Signaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Annulation mutuelle.")
-                from src.telegram_bot import send_message
-                send_message(f"🛡️ *Cross-Correlation Guard*\nSignaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) -> Les deux signaux sont annulés par sécurité.", chat_id="375129602")
-                blocked_by_correlation.add(p1)
-                blocked_by_correlation.add(p2)
+        # Check by timeframe
+        for tf in intervals:
+            s1 = next((s for s in strong_signals if s.symbol == p1 and s.timeframe == tf), None)
+            s2 = next((s for s in strong_signals if s.symbol == p2 and s.timeframe == tf), None)
+            if s1 and s2:
+                if s1.signal != s2.signal:
+                    logger.info(f"🛡️ Cross-Correlation | Signaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) en {tf.upper()} -> Annulation mutuelle.")
+                    send_message(f"🛡️ *Cross-Correlation Guard*\nSignaux opposés sur {s1.pair_name} ({s1.signal}) et {s2.pair_name} ({s2.signal}) en {tf.upper()} -> Les deux signaux sont annulés par sécurité.", chat_id="375129602")
+                    blocked_by_correlation.add((tf, p1))
+                    blocked_by_correlation.add((tf, p2))
                 
-    strong_signals = [s for s in strong_signals if s.symbol not in blocked_by_correlation]
+    strong_signals = [s for s in strong_signals if (s.timeframe, s.symbol) not in blocked_by_correlation]
     strong_signals.sort(key=lambda s: s.confidence, reverse=True)
     
     # Exporter au format JSON pour le site web (GitHub Pages)
-    from datetime import datetime, timezone
-    
     web_data = {
         "last_update": datetime.now(timezone.utc).isoformat(),
         "signals": [
@@ -503,7 +521,8 @@ def main():
                 "confidence": s.confidence,
                 "rsi": s.rsi,
                 "macd_trend": s.macd_trend,
-                "forecast_dir": s.forecast_dir
+                "forecast_dir": s.forecast_dir,
+                "timeframe": s.timeframe
             } for s in strong_signals
         ]
     }
@@ -521,10 +540,10 @@ def main():
     else:
         logger.info("Aucun signal fort détecté pour cette heure-ci.")
         # Heartbeat : confirme que le bot tourne même sans signal
-        from src.telegram_bot import send_message
+        total_paires = sum(len(all_data_by_interval[tf]) for tf in intervals)
         send_message(
             f"🔍 *Scan Forex terminé*\n"
-            f"📊 {len(all_data)} paires analysées\n"
+            f"📊 Paires analysées sur 5m, 15m et 30m ({total_paires} séries)\n"
             f"🤖 {len(signals)} signaux évalués — 0 signal fort\n"
             f"Consensus majoritaire (>=3/5) IA actif\n"
             f"_Prochain scan dans 30 min_"

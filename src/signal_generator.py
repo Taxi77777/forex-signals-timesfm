@@ -39,6 +39,7 @@ class TradingSignal:
     fisher:        float          # Fisher Transform value
     fisher_status: str            # Fisher status description
     is_extended:   bool = False
+    timeframe:     str = "15m"
 
 
 def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02) -> str:
@@ -91,6 +92,7 @@ def generate_signal(
     granite_predictions: np.ndarray | None = None,
     df_1h: pd.DataFrame | None = None,
     df_4h: pd.DataFrame | None = None,
+    timeframe: str = "15m",
 ) -> TradingSignal | None:
     """
     Génère un signal de trading en combinant :
@@ -376,6 +378,7 @@ def generate_signal(
         fisher=        ind["fisher"],
         fisher_status= ind["fisher_status"],
         is_extended=   is_extended,
+        timeframe=     timeframe,
     )
 
     logger.info(

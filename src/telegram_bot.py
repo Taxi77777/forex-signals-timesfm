@@ -45,8 +45,9 @@ def format_signal_message(signal: TradingSignal) -> str:
     strong_tag = " 🔥 *SIGNAL FORT*" if signal.is_strong else ""
 
     if signal.signal == "HOLD":
+        tf_tag = f" ({signal.timeframe.upper()})" if hasattr(signal, "timeframe") else ""
         return (
-            f"⏸️ *SIGNAL FOREX — {signal.pair_name}*\n"
+            f"⏸️ *SIGNAL FOREX — {signal.pair_name}{tf_tag}*\n"
             f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
             f"📊 Signal     : {emoji} *HOLD* — Pas d'entrée recommandée\n"
             f"💰 Prix actuel: `{signal.current_price}`\n"
@@ -64,8 +65,9 @@ def format_signal_message(signal: TradingSignal) -> str:
     sl_sign = "-" if signal.signal == "BUY" else "+"
     sl_text = "Aucun" if signal.stop_loss == "Aucun" else f"`{signal.stop_loss}` ({sl_sign}{signal.sl_pct}%)"
 
+    tf_tag = f" ({signal.timeframe.upper()})" if hasattr(signal, "timeframe") else ""
     return (
-        f"{emoji} *SIGNAL FOREX — {signal.pair_name}*{strong_tag}\n"
+        f"{emoji} *SIGNAL FOREX — {signal.pair_name}{tf_tag}*{strong_tag}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📊 Signal     : {emoji} *{signal.signal}*\n"
         f"💰 Prix actuel: `{signal.current_price}`\n"
@@ -106,13 +108,14 @@ def format_summary_message(signals: list[TradingSignal]) -> str:
     for s in signals:
         emoji = _signal_emoji(s.signal)
         strong = " 🔥" if s.is_strong else ""
+        tf_tag = f" ({s.timeframe.upper()})" if hasattr(s, "timeframe") else ""
         if s.signal != "HOLD":
             lines.append(
-                f"{emoji} *{s.pair_name}* — {s.signal}{strong} | "
+                f"{emoji} *{s.pair_name}{tf_tag}* — {s.signal}{strong} | "
                 f"`{s.current_price}` → TP `{s.take_profit}` | Conf: {s.confidence}%"
             )
         else:
-            lines.append(f"⏸️ *{s.pair_name}* — HOLD | {s.confidence}%")
+            lines.append(f"⏸️ *{s.pair_name}{tf_tag}* — HOLD | {s.confidence}%")
 
     buy_count  = sum(1 for s in signals if s.signal == "BUY")
     sell_count = sum(1 for s in signals if s.signal == "SELL")
