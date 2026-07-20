@@ -123,13 +123,13 @@ STOP_LOSS_FACTOR    = 3.0     # SL = 3.0x l'ATR (laisse respirer en 15m)
 # ─── Seuils de confiance ───────────────────────────────────────────────────────
 MIN_CONFIDENCE      = 60      # Signal ignoré si confiance < 60%
 STRONG_SIGNAL       = 60      # Signal fort si confiance >= 60%
-MAX_EMA_EXTENSION_PCT = 0.15   # Écart max toléré avec EMA20 15m (%)
+MAX_EMA_EXTENSION_PCT = 0.0   # Écart max toléré avec EMA20 15m (%) (0.0 = Forcer le pullback strict)
 
 # ─── Guards de Marché (Filtres de Tendance) ───────────────────────────────────
 ENABLE_DXY_GUARD         = False   # Bloque les BUY si Dollar Index est haussier (désactivé car très restrictif)
 ENABLE_YIELD_GUARD       = False   # Bloque les BUY si les taux US10Y sont haussiers (désactivé car très restrictif)
 ENABLE_SESSION_FILTER    = True    # Ne trade que durant les sessions de Londres/NY (07h-21h UTC)
-ENABLE_MTF_FILTER        = False   # Bloque les signaux si la tendance 1H/4H est adverse (Désactivé pour avoir plus de signaux)
+ENABLE_MTF_FILTER        = True    # Bloque les signaux si la tendance 1H/4H est adverse (Activé pour suivre la tendance de fond)
 
 # ─── TimesFM ───────────────────────────────────────────────────────────────────
 USE_TIMESFM         = os.getenv("USE_TIMESFM", "true").lower() == "true"
