@@ -251,12 +251,20 @@ def generate_signal(
         ema20 = ind.get("ema20")
         if ema20 and ema20 > 0:
             extension_pct = (current_price - ema20) / ema20 * 100
-            limit_pct = getattr(config, "MAX_EMA_EXTENSION_PCT", 0.15)
+            # Limite d'extension EMA20 adaptative selon le comportement de la devise
+            clean_sym = symbol.replace("=X", "").upper()
+            if any(ex in clean_sym for ex in ["MXN", "ZAR"]):
+                limit_pct = 0.15  # Exotiques très volatiles (15 pips environ)
+            elif any(cr in clean_sym for cr in ["AUD", "NZD"]):
+                limit_pct = 0.08  # Crosses de volatilité moyenne (8 pips environ)
+            else:
+                limit_pct = 0.04  # Majeures peu volatiles (EUR, GBP, JPY, CHF) (4 pips environ)
+                
             if final_signal == "BUY" and extension_pct > limit_pct:
-                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop haut par rapport à EMA20 15m : +{extension_pct:.3f}% > {limit_pct}%) -> Signal BUY marqué comme étendu (en attente de pullback)")
+                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop haut par rapport à EMA20 : +{extension_pct:.3f}% > {limit_pct}%) -> Signal BUY marqué comme étendu (en attente de pullback)")
                 is_extended = True
             elif final_signal == "SELL" and extension_pct < -limit_pct:
-                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop bas par rapport à EMA20 15m : {extension_pct:.3f}% < -{limit_pct}%) -> Signal SELL marqué comme étendu (en attente de pullback)")
+                logger.info(f"⏳ Filtre Extension actif sur {symbol} (Prix trop bas par rapport à EMA20 : {extension_pct:.3f}% < -{limit_pct}%) -> Signal SELL marqué comme étendu (en attente de pullback)")
                 is_extended = True
 
     # FILTRE MULTI-TIMEFRAME (TENDANCE EMA 1H + SUPERTREND 1H)
