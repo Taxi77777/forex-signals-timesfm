@@ -1,4 +1,16 @@
 {
-  "last_update": "2026-07-20T12:20:09.138817+00:00",
-  "signals": []
+  "last_update": "2026-07-20T12:41:49.472468+00:00",
+  "signals": [
+    {
+      "pair_name": "USD/TRY",
+      "signal": "BUY",
+      "current_price": 47.095,
+      "take_profit": 47.45355,
+      "stop_loss": "Aucun",
+      "confidence": 68,
+      "rsi": 15.7,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY"
+    }
+  ]
 }
