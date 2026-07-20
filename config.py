@@ -125,6 +125,11 @@ MIN_CONFIDENCE      = 70      # Signal ignoré si confiance < 70%
 STRONG_SIGNAL       = 70      # Signal fort si confiance >= 70%
 MAX_EMA_EXTENSION_PCT = 0.15   # Écart max toléré avec EMA20 15m (%)
 
+# ─── Guards de Marché (Filtres de Tendance) ───────────────────────────────────
+ENABLE_DXY_GUARD         = False   # Bloque les BUY si Dollar Index est haussier (désactivé car très restrictif)
+ENABLE_YIELD_GUARD       = False   # Bloque les BUY si les taux US10Y sont haussiers (désactivé car très restrictif)
+ENABLE_SESSION_FILTER    = True    # Ne trade que durant les sessions de Londres/NY (07h-21h UTC)
+
 # ─── TimesFM ───────────────────────────────────────────────────────────────────
 USE_TIMESFM         = os.getenv("USE_TIMESFM", "true").lower() == "true"
 TIMESFM_MODEL_ID    = "google/timesfm-1.0-200m-pytorch"

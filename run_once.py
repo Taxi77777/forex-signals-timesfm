@@ -6,6 +6,7 @@ Lance UNE analyse complète, envoie les signaux sur Telegram, puis quitte.
 import logging
 import os
 import sys
+import json
 
 # Forcer l'encodage utf-8 pour éviter les erreurs d'affichage d'emojis sous Windows
 try:
@@ -409,7 +410,7 @@ def main():
     strong_signals = immediate_signals + completed_signals
     
     # Si hors session, on vide les signaux forts
-    if not is_session_active:
+    if getattr(config, "ENABLE_SESSION_FILTER", True) and not is_session_active:
         logger.info(f"⏳ Session Filter | Hors sessions majeures (Heure UTC : {now_utc.strftime('%H:%M')}). Filtre actif.")
         strong_signals = []
     
@@ -424,36 +425,38 @@ def main():
         reasons = []
         
         # Validation DXY
-        if dxy_trend == "BULLISH":
-            if is_usd_quote and s.signal == "BUY":
-                block = True
-                reasons.append("Dollar (DXY) haussier")
-            elif is_usd_base and s.signal == "SELL":
-                block = True
-                reasons.append("Dollar (DXY) haussier")
-        elif dxy_trend == "BEARISH":
-            if is_usd_quote and s.signal == "SELL":
-                block = True
-                reasons.append("Dollar (DXY) baissier")
-            elif is_usd_base and s.signal == "BUY":
-                block = True
-                reasons.append("Dollar (DXY) baissier")
+        if getattr(config, "ENABLE_DXY_GUARD", False):
+            if dxy_trend == "BULLISH":
+                if is_usd_quote and s.signal == "BUY":
+                    block = True
+                    reasons.append("Dollar (DXY) haussier")
+                elif is_usd_base and s.signal == "SELL":
+                    block = True
+                    reasons.append("Dollar (DXY) haussier")
+            elif dxy_trend == "BEARISH":
+                if is_usd_quote and s.signal == "SELL":
+                    block = True
+                    reasons.append("Dollar (DXY) baissier")
+                elif is_usd_base and s.signal == "BUY":
+                    block = True
+                    reasons.append("Dollar (DXY) baissier")
                 
         # Validation Yield Guard
-        if yield_trend == "BULLISH":
-            if is_usd_quote and s.signal == "BUY":
-                block = True
-                reasons.append("Taux US10Y haussiers")
-            elif is_usd_base and s.signal == "SELL":
-                block = True
-                reasons.append("Taux US10Y haussiers")
-        elif yield_trend == "BEARISH":
-            if is_usd_quote and s.signal == "SELL":
-                block = True
-                reasons.append("Taux US10Y baissiers")
-            elif is_usd_base and s.signal == "BUY":
-                block = True
-                reasons.append("Taux US10Y baissiers")
+        if getattr(config, "ENABLE_YIELD_GUARD", False):
+            if yield_trend == "BULLISH":
+                if is_usd_quote and s.signal == "BUY":
+                    block = True
+                    reasons.append("Taux US10Y haussiers")
+                elif is_usd_base and s.signal == "SELL":
+                    block = True
+                    reasons.append("Taux US10Y haussiers")
+            elif yield_trend == "BEARISH":
+                if is_usd_quote and s.signal == "SELL":
+                    block = True
+                    reasons.append("Taux US10Y baissiers")
+                elif is_usd_base and s.signal == "BUY":
+                    block = True
+                    reasons.append("Taux US10Y baissiers")
                 
         if block:
             block_msg = " + ".join(reasons)
@@ -486,7 +489,6 @@ def main():
     strong_signals.sort(key=lambda s: s.confidence, reverse=True)
     
     # Exporter au format JSON pour le site web (GitHub Pages)
-    import json
     from datetime import datetime, timezone
     
     web_data = {
