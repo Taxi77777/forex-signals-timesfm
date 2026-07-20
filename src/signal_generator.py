@@ -344,14 +344,16 @@ def generate_signal(
         
         if final_signal == "BUY":
             take_profit = round(current_price + atr * tp_mult_factor, 5)
+            stop_loss   = round(current_price - atr * config.STOP_LOSS_FACTOR, 5)
         else:
             take_profit = round(current_price - atr * tp_mult_factor, 5)
+            stop_loss   = round(current_price + atr * config.STOP_LOSS_FACTOR, 5)
     else:
         take_profit = current_price
+        stop_loss   = current_price
 
-    stop_loss   = "Aucun"
     tp_pct      = round(abs(take_profit - current_price) / current_price * 100, 3)
-    sl_pct      = 0.0
+    sl_pct      = round(abs(stop_loss - current_price) / current_price * 100, 3)
 
     signal = TradingSignal(
         symbol=        symbol,
