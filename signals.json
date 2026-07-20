@@ -1,16 +1,27 @@
 {
-  "last_update": "2026-07-20T10:48:02.756840+00:00",
+  "last_update": "2026-07-20T11:37:40.143919+00:00",
   "signals": [
     {
-      "pair_name": "GBP/NZD",
-      "signal": "SELL",
-      "current_price": 2.30107,
-      "take_profit": 2.29897,
-      "stop_loss": 2.30359,
-      "confidence": 61,
-      "rsi": 55.0,
+      "pair_name": "USD/TRY",
+      "signal": "BUY",
+      "current_price": 47.095,
+      "take_profit": 47.40518,
+      "stop_loss": 46.82914,
+      "confidence": 77,
+      "rsi": 11.7,
       "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:HOLD/CHO:SELL/MOI:HOLD/LLA:SELL/GRA:SELL"
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:HOLD/GRA:BUY"
+    },
+    {
+      "pair_name": "USD/ZAR",
+      "signal": "BUY",
+      "current_price": 16.44317,
+      "take_profit": 16.4798,
+      "stop_loss": 16.39921,
+      "confidence": 61,
+      "rsi": 29.5,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:SELL/MOI:BUY/LLA:SELL/GRA:BUY"
     }
   ]
 }
