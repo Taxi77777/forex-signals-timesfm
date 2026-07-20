@@ -129,6 +129,7 @@ MAX_EMA_EXTENSION_PCT = 0.15   # Écart max toléré avec EMA20 15m (%)
 ENABLE_DXY_GUARD         = False   # Bloque les BUY si Dollar Index est haussier (désactivé car très restrictif)
 ENABLE_YIELD_GUARD       = False   # Bloque les BUY si les taux US10Y sont haussiers (désactivé car très restrictif)
 ENABLE_SESSION_FILTER    = True    # Ne trade que durant les sessions de Londres/NY (07h-21h UTC)
+ENABLE_MTF_FILTER        = False   # Bloque les signaux si la tendance 1H/4H est adverse (Désactivé pour avoir plus de signaux)
 
 # ─── TimesFM ───────────────────────────────────────────────────────────────────
 USE_TIMESFM         = os.getenv("USE_TIMESFM", "true").lower() == "true"
