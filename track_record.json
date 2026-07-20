@@ -2,373 +2,373 @@
   "models": {
     "CHO": {
       "global": {
-        "wins": 452,
-        "total": 2015
+        "wins": 479,
+        "total": 2112
       },
       "per_pair": {
         "EURUSD=X": {
           "wins": 19,
-          "total": 65
+          "total": 68
         },
         "GBPUSD=X": {
           "wins": 14,
-          "total": 62
+          "total": 64
         },
         "JPY=X": {
           "wins": 6,
-          "total": 65
+          "total": 68
         },
         "CAD=X": {
-          "wins": 13,
-          "total": 60
+          "wins": 14,
+          "total": 63
         },
         "CHF=X": {
           "wins": 17,
-          "total": 65
+          "total": 68
         },
         "NZDUSD=X": {
-          "wins": 11,
-          "total": 63
+          "wins": 12,
+          "total": 66
         },
         "EURJPY=X": {
           "wins": 13,
-          "total": 65
+          "total": 68
         },
         "EURAUD=X": {
           "wins": 17,
-          "total": 64
+          "total": 67
         },
         "EURCHF=X": {
-          "wins": 9,
-          "total": 65
+          "wins": 10,
+          "total": 68
         },
         "EURNZD=X": {
-          "wins": 18,
-          "total": 61
+          "wins": 20,
+          "total": 64
         },
         "GBPJPY=X": {
           "wins": 11,
-          "total": 63
+          "total": 66
         },
         "GBPAUD=X": {
           "wins": 19,
-          "total": 63
+          "total": 66
         },
         "GBPCAD=X": {
-          "wins": 16,
-          "total": 59
-        },
-        "GBPCHF=X": {
-          "wins": 15,
+          "wins": 18,
           "total": 62
         },
-        "GBPNZD=X": {
-          "wins": 17,
-          "total": 61
-        },
-        "AUDJPY=X": {
-          "wins": 14,
-          "total": 64
-        },
-        "AUDCAD=X": {
-          "wins": 20,
-          "total": 33
-        },
-        "AUDCHF=X": {
-          "wins": 17,
-          "total": 61
-        },
-        "NZDJPY=X": {
-          "wins": 12,
+        "GBPCHF=X": {
+          "wins": 16,
           "total": 65
         },
+        "GBPNZD=X": {
+          "wins": 18,
+          "total": 64
+        },
+        "AUDJPY=X": {
+          "wins": 16,
+          "total": 67
+        },
+        "AUDCAD=X": {
+          "wins": 23,
+          "total": 36
+        },
+        "AUDCHF=X": {
+          "wins": 18,
+          "total": 64
+        },
+        "NZDJPY=X": {
+          "wins": 13,
+          "total": 68
+        },
         "CADJPY=X": {
-          "wins": 21,
-          "total": 60
+          "wins": 22,
+          "total": 63
         },
         "CHFJPY=X": {
           "wins": 17,
-          "total": 64
+          "total": 67
         },
         "MXN=X": {
-          "wins": 19,
-          "total": 42
+          "wins": 22,
+          "total": 45
         },
         "USDTRY=X": {
           "wins": 8,
-          "total": 64
+          "total": 66
         },
         "USDZAR=X": {
-          "wins": 13,
-          "total": 63
+          "wins": 14,
+          "total": 66
         },
         "USDSEK=X": {
           "wins": 13,
-          "total": 65
+          "total": 68
         },
         "USDNOK=X": {
-          "wins": 14,
-          "total": 60
+          "wins": 15,
+          "total": 63
         },
         "USDDKK=X": {
           "wins": 13,
-          "total": 65
+          "total": 68
         },
         "USDSGD=X": {
-          "wins": 6,
-          "total": 65
+          "wins": 9,
+          "total": 68
         },
         "USDHKD=X": {
           "wins": 0,
-          "total": 65
+          "total": 68
         },
         "EURCAD=X": {
           "wins": 11,
-          "total": 53
+          "total": 56
         },
         "AUDUSD=X": {
-          "wins": 15,
-          "total": 61
+          "wins": 17,
+          "total": 64
         },
         "EURGBP=X": {
           "wins": 13,
-          "total": 62
+          "total": 65
         },
         "AUDNZD=X": {
           "wins": 11,
-          "total": 60
+          "total": 63
         }
       }
     },
     "LLA": {
       "global": {
-        "wins": 539,
-        "total": 1971
+        "wins": 580,
+        "total": 2066
       },
       "per_pair": {
         "EURUSD=X": {
-          "wins": 20,
-          "total": 60
+          "wins": 23,
+          "total": 63
         },
         "GBPUSD=X": {
           "wins": 22,
-          "total": 62
+          "total": 65
         },
         "CAD=X": {
-          "wins": 14,
-          "total": 59
+          "wins": 16,
+          "total": 62
         },
         "CHF=X": {
-          "wins": 21,
-          "total": 61
+          "wins": 23,
+          "total": 64
         },
         "NZDUSD=X": {
-          "wins": 24,
-          "total": 62
+          "wins": 26,
+          "total": 65
         },
         "EURGBP=X": {
           "wins": 20,
-          "total": 62
+          "total": 65
         },
         "EURJPY=X": {
-          "wins": 17,
-          "total": 55
+          "wins": 20,
+          "total": 58
         },
         "EURAUD=X": {
           "wins": 14,
-          "total": 63
+          "total": 66
         },
         "EURCAD=X": {
           "wins": 15,
-          "total": 59
-        },
-        "EURCHF=X": {
-          "wins": 18,
           "total": 62
         },
+        "EURCHF=X": {
+          "wins": 20,
+          "total": 65
+        },
         "EURNZD=X": {
-          "wins": 18,
-          "total": 63
+          "wins": 20,
+          "total": 66
         },
         "GBPJPY=X": {
           "wins": 20,
-          "total": 59
+          "total": 62
         },
         "GBPAUD=X": {
           "wins": 10,
-          "total": 65
+          "total": 68
         },
         "GBPCAD=X": {
-          "wins": 15,
-          "total": 58
+          "wins": 17,
+          "total": 61
         },
         "GBPCHF=X": {
-          "wins": 23,
-          "total": 63
+          "wins": 24,
+          "total": 65
         },
         "GBPNZD=X": {
-          "wins": 11,
-          "total": 62
+          "wins": 14,
+          "total": 65
         },
         "AUDJPY=X": {
           "wins": 18,
-          "total": 64
+          "total": 67
         },
         "AUDCAD=X": {
-          "wins": 18,
-          "total": 59
+          "wins": 19,
+          "total": 62
         },
         "AUDCHF=X": {
           "wins": 19,
-          "total": 64
+          "total": 67
         },
         "AUDNZD=X": {
           "wins": 12,
-          "total": 63
+          "total": 66
         },
         "NZDJPY=X": {
-          "wins": 21,
-          "total": 62
+          "wins": 22,
+          "total": 65
         },
         "CADJPY=X": {
-          "wins": 13,
-          "total": 56
+          "wins": 15,
+          "total": 59
         },
         "CHFJPY=X": {
-          "wins": 15,
-          "total": 60
+          "wins": 16,
+          "total": 63
         },
         "MXN=X": {
-          "wins": 13,
-          "total": 62
-        },
-        "USDTRY=X": {
-          "wins": 6,
-          "total": 60
-        },
-        "USDZAR=X": {
           "wins": 14,
           "total": 64
         },
+        "USDTRY=X": {
+          "wins": 6,
+          "total": 63
+        },
+        "USDZAR=X": {
+          "wins": 16,
+          "total": 67
+        },
         "USDSEK=X": {
+          "wins": 23,
+          "total": 67
+        },
+        "USDNOK=X": {
           "wins": 20,
           "total": 64
         },
-        "USDNOK=X": {
-          "wins": 18,
-          "total": 61
-        },
         "USDDKK=X": {
-          "wins": 18,
-          "total": 63
+          "wins": 21,
+          "total": 66
         },
         "USDSGD=X": {
-          "wins": 16,
-          "total": 61
+          "wins": 18,
+          "total": 64
         },
         "USDHKD=X": {
           "wins": 0,
-          "total": 18
+          "total": 19
         },
         "JPY=X": {
           "wins": 13,
-          "total": 57
+          "total": 60
         },
         "AUDUSD=X": {
-          "wins": 23,
-          "total": 58
+          "wins": 24,
+          "total": 61
         }
       }
     },
     "GRA": {
       "global": {
-        "wins": 213,
-        "total": 663
+        "wins": 236,
+        "total": 723
       },
       "per_pair": {
         "EURUSD=X": {
           "wins": 6,
-          "total": 36
+          "total": 38
         },
         "GBPUSD=X": {
           "wins": 6,
-          "total": 18
+          "total": 21
         },
         "AUDUSD=X": {
-          "wins": 10,
-          "total": 30
+          "wins": 11,
+          "total": 31
         },
         "CAD=X": {
           "wins": 5,
-          "total": 8
+          "total": 10
         },
         "NZDUSD=X": {
-          "wins": 10,
-          "total": 43
+          "wins": 12,
+          "total": 45
         },
         "GBPJPY=X": {
           "wins": 1,
-          "total": 11
+          "total": 14
         },
         "AUDCHF=X": {
-          "wins": 17,
-          "total": 53
+          "wins": 19,
+          "total": 56
         },
         "NZDJPY=X": {
-          "wins": 7,
-          "total": 16
-        },
-        "CADJPY=X": {
-          "wins": 5,
-          "total": 9
-        },
-        "USDZAR=X": {
-          "wins": 17,
-          "total": 54
-        },
-        "CHF=X": {
-          "wins": 11,
-          "total": 23
-        },
-        "EURAUD=X": {
           "wins": 9,
           "total": 18
         },
+        "CADJPY=X": {
+          "wins": 8,
+          "total": 12
+        },
+        "USDZAR=X": {
+          "wins": 20,
+          "total": 57
+        },
+        "CHF=X": {
+          "wins": 11,
+          "total": 26
+        },
+        "EURAUD=X": {
+          "wins": 9,
+          "total": 20
+        },
         "GBPAUD=X": {
-          "wins": 10,
-          "total": 13
+          "wins": 11,
+          "total": 16
         },
         "GBPNZD=X": {
           "wins": 3,
-          "total": 8
+          "total": 10
         },
         "AUDCAD=X": {
-          "wins": 15,
-          "total": 49
+          "wins": 17,
+          "total": 51
         },
         "AUDNZD=X": {
           "wins": 4,
-          "total": 10
+          "total": 12
         },
         "EURGBP=X": {
           "wins": 6,
-          "total": 22
+          "total": 23
         },
         "GBPCAD=X": {
           "wins": 2,
-          "total": 31
+          "total": 33
         },
         "USDSEK=X": {
-          "wins": 10,
-          "total": 20
+          "wins": 12,
+          "total": 23
         },
         "USDSGD=X": {
-          "wins": 3,
-          "total": 13
+          "wins": 4,
+          "total": 14
         },
         "GBPCHF=X": {
           "wins": 5,
-          "total": 22
+          "total": 24
         },
         "USDTRY=X": {
           "wins": 6,
@@ -376,31 +376,31 @@
         },
         "USDNOK=X": {
           "wins": 10,
-          "total": 38
+          "total": 40
         },
         "JPY=X": {
           "wins": 6,
-          "total": 7
+          "total": 10
         },
         "CHFJPY=X": {
           "wins": 3,
-          "total": 6
+          "total": 7
         },
         "MXN=X": {
-          "wins": 7,
-          "total": 37
+          "wins": 8,
+          "total": 39
         },
         "EURJPY=X": {
-          "wins": 2,
-          "total": 4
+          "wins": 3,
+          "total": 5
         },
         "EURCHF=X": {
           "wins": 6,
           "total": 13
         },
         "AUDJPY=X": {
-          "wins": 3,
-          "total": 6
+          "wins": 4,
+          "total": 8
         },
         "EURCAD=X": {
           "wins": 3,
@@ -411,32 +411,32 @@
           "total": 14
         },
         "USDDKK=X": {
-          "wins": 0,
-          "total": 6
+          "wins": 1,
+          "total": 8
         }
       }
     },
     "MOI": {
       "global": {
-        "wins": 45,
-        "total": 119
+        "wins": 59,
+        "total": 143
       },
       "per_pair": {
         "AUDUSD=X": {
-          "wins": 5,
-          "total": 11
+          "wins": 7,
+          "total": 13
         },
         "NZDUSD=X": {
-          "wins": 3,
-          "total": 7
+          "wins": 5,
+          "total": 9
         },
         "GBPCHF=X": {
           "wins": 4,
-          "total": 8
+          "total": 11
         },
         "AUDCHF=X": {
-          "wins": 4,
-          "total": 14
+          "wins": 6,
+          "total": 16
         },
         "USDZAR=X": {
           "wins": 6,
@@ -451,32 +451,32 @@
           "total": 9
         },
         "AUDJPY=X": {
-          "wins": 2,
-          "total": 6
+          "wins": 3,
+          "total": 7
         },
         "NZDJPY=X": {
-          "wins": 1,
-          "total": 7
+          "wins": 3,
+          "total": 9
         },
         "MXN=X": {
           "wins": 0,
           "total": 3
         },
         "GBPNZD=X": {
-          "wins": 3,
-          "total": 4
+          "wins": 4,
+          "total": 6
         },
         "GBPAUD=X": {
-          "wins": 3,
-          "total": 4
+          "wins": 4,
+          "total": 5
         },
         "EURAUD=X": {
           "wins": 0,
-          "total": 3
+          "total": 4
         },
         "GBPUSD=X": {
           "wins": 0,
-          "total": 1
+          "total": 3
         },
         "JPY=X": {
           "wins": 1,
@@ -492,15 +492,15 @@
         },
         "GBPJPY=X": {
           "wins": 0,
-          "total": 5
+          "total": 6
         },
         "USDNOK=X": {
           "wins": 1,
           "total": 2
         },
         "EURNZD=X": {
-          "wins": 0,
-          "total": 3
+          "wins": 1,
+          "total": 4
         },
         "USDSEK=X": {
           "wins": 1,
@@ -512,22 +512,26 @@
         },
         "EURCAD=X": {
           "wins": 0,
-          "total": 2
+          "total": 3
         },
         "CADJPY=X": {
-          "wins": 0,
-          "total": 1
+          "wins": 2,
+          "total": 3
         },
         "AUDCAD=X": {
           "wins": 1,
+          "total": 1
+        },
+        "EURGBP=X": {
+          "wins": 0,
           "total": 1
         }
       }
     },
     "TFM": {
       "global": {
-        "wins": 37,
-        "total": 133
+        "wins": 45,
+        "total": 150
       },
       "per_pair": {
         "MXN=X": {
@@ -535,8 +539,8 @@
           "total": 24
         },
         "USDZAR=X": {
-          "wins": 6,
-          "total": 29
+          "wins": 7,
+          "total": 30
         },
         "USDTRY=X": {
           "wins": 5,
@@ -547,16 +551,16 @@
           "total": 4
         },
         "USDSEK=X": {
-          "wins": 3,
-          "total": 8
+          "wins": 5,
+          "total": 10
         },
         "AUDJPY=X": {
-          "wins": 0,
-          "total": 2
+          "wins": 1,
+          "total": 3
         },
         "GBPJPY=X": {
           "wins": 0,
-          "total": 1
+          "total": 3
         },
         "USDNOK=X": {
           "wins": 2,
@@ -572,7 +576,7 @@
         },
         "GBPNZD=X": {
           "wins": 1,
-          "total": 1
+          "total": 2
         },
         "AUDNZD=X": {
           "wins": 1,
@@ -580,7 +584,7 @@
         },
         "NZDJPY=X": {
           "wins": 2,
-          "total": 2
+          "total": 3
         },
         "CHF=X": {
           "wins": 1,
@@ -599,8 +603,8 @@
           "total": 2
         },
         "AUDUSD=X": {
-          "wins": 2,
-          "total": 2
+          "wins": 3,
+          "total": 3
         },
         "USDSGD=X": {
           "wins": 1,
@@ -608,15 +612,15 @@
         },
         "EURJPY=X": {
           "wins": 0,
-          "total": 3
+          "total": 4
         },
         "CHFJPY=X": {
           "wins": 2,
-          "total": 3
+          "total": 4
         },
         "EURUSD=X": {
-          "wins": 1,
-          "total": 2
+          "wins": 2,
+          "total": 3
         },
         "GBPCAD=X": {
           "wins": 0,
@@ -624,14 +628,22 @@
         },
         "GBPCHF=X": {
           "wins": 0,
-          "total": 1
+          "total": 3
         },
         "USDDKK=X": {
+          "wins": 2,
+          "total": 2
+        },
+        "GBPUSD=X": {
+          "wins": 0,
+          "total": 1
+        },
+        "EURGBP=X": {
           "wins": 1,
           "total": 1
         }
       }
     }
   },
-  "updated": "2026-07-20T16:16:10.507344+00:00"
+  "updated": "2026-07-20T16:33:55.389803+00:00"
 }
