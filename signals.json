@@ -1,4 +1,29 @@
 {
-  "last_update": "2026-07-20T13:32:52.087080+00:00",
-  "signals": []
+  "last_update": "2026-07-20T13:52:19.385550+00:00",
+  "signals": [
+    {
+      "pair_name": "USD/MXN",
+      "signal": "BUY",
+      "current_price": 17.475,
+      "take_profit": 17.51614,
+      "stop_loss": "Aucun",
+      "confidence": 66,
+      "rsi": 41.2,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY",
+      "timeframe": "15m"
+    },
+    {
+      "pair_name": "GBP/JPY",
+      "signal": "BUY",
+      "current_price": 218.425,
+      "take_profit": 218.7674,
+      "stop_loss": "Aucun",
+      "confidence": 66,
+      "rsi": 41.9,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:HOLD/CHO:HOLD/MOI:BUY/LLA:BUY/GRA:BUY",
+      "timeframe": "30m"
+    }
+  ]
 }
