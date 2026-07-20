@@ -1,17 +1,17 @@
 {
-  "last_update": "2026-07-20T14:34:19.097018+00:00",
+  "last_update": "2026-07-20T15:22:55.458942+00:00",
   "signals": [
     {
-      "pair_name": "USD/MXN",
+      "pair_name": "GBP/CHF",
       "signal": "BUY",
-      "current_price": 17.461,
-      "take_profit": 17.52199,
+      "current_price": 1.08744,
+      "take_profit": 1.09169,
       "stop_loss": "Aucun",
-      "confidence": 64,
-      "rsi": 35.6,
-      "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:BUY/CHO:SELL/MOI:BUY/LLA:BUY/GRA:BUY",
-      "timeframe": "15m"
+      "confidence": 87,
+      "rsi": 48.2,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY",
+      "timeframe": "30m"
     }
   ]
 }
