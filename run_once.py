@@ -489,13 +489,13 @@ def main():
                     block = True
                     reasons.append("Taux US10Y baissiers")
                 
+        # Guard INFORMATIF (n'annule plus le signal, il l'annote seulement)
         if block:
             block_msg = " + ".join(reasons)
-            logger.info(f"🛡️ DXY/Yield Guard Block | Signal {s.pair_name} ({s.timeframe}) {s.signal} bloqué car : {block_msg}")
-            send_message(f"🛡️ *DXY/Yield Guard*\nSignal {s.pair_name} ({s.timeframe}) {s.signal} bloqué car :\n_{block_msg}_", chat_id="375129602")
-        else:
-            filtered_strong_signals.append(s)
-            
+            s.macro_warning = f"⚠️ Macro défavorable : {block_msg}"
+            logger.info(f"⚠️ DXY/Yield Guard (info) | {s.pair_name} {s.signal} : {block_msg}")
+        filtered_strong_signals.append(s)   # on garde TOUS les signaux
+
     strong_signals = filtered_strong_signals
  
     # ── Filtre de Corrélation Croisée ──
