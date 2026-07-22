@@ -22,29 +22,5 @@
     "fisher_status": "⚠️ Croisement extreme haut (SELL)",
     "timestamp": 1784750346.128211,
     "timeframe": "30m"
-  },
-  {
-    "symbol": "AUDCHF=X",
-    "pair_name": "AUD/CHF",
-    "signal": "BUY",
-    "confidence": 68,
-    "current_price": 0.56972,
-    "take_profit": 0.57313,
-    "stop_loss": "Aucun",
-    "tp_pct": 0.599,
-    "sl_pct": 0.0,
-    "rsi": 65.2,
-    "rsi_status": "Neutre ⚖️",
-    "macd_trend": "Haussier 📈",
-    "ema_trend": "Haussier 📈",
-    "bb_position": "Dans les Bandes ✅",
-    "atr": 0.00097,
-    "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY",
-    "forecast_4h": 0.56975,
-    "forecast_24h": 0.56975,
-    "fisher": 2.88,
-    "fisher_status": "🔥 Croisement tres extreme (SELL fort)",
-    "timestamp": 1784750346.7708356,
-    "timeframe": "30m"
   }
 ]
