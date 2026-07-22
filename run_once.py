@@ -269,6 +269,21 @@ def main():
     # Envoi Telegram (uniquement les signaux forts triés par confiance décroissante)
     strong_signals = [s for s in signals if s.is_strong and s.signal != "HOLD"]
 
+    # ── Filtre de Corrélation Matrice Mataf ───────────────────────────────────
+    from src.correlation_filter import check_correlation_confirmation
+    df_map_15m = {sym: df for (tf, sym), df in ind_map_multi.items() if tf == "15m"}
+    
+    verified_signals = []
+    for s in strong_signals:
+        is_valid_corr, corr_msg = check_correlation_confirmation(s.symbol, s.signal, df_map_15m)
+        logger.info(f"🔗 {s.pair_name} | {corr_msg}")
+        if is_valid_corr:
+            verified_signals.append(s)
+        else:
+            logger.info(f"❌ Signal {s.pair_name} {s.signal} annulé par le filtre de corrélation Mataf (Risque de Faux Breakout).")
+            
+    strong_signals = verified_signals
+
     # ── Gestionnaire de Pullback (Wait for Pullback logic) ───────────────────
     pullbacks_file = "pending_pullbacks.json"
     pending_pullbacks = []
