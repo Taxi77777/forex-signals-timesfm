@@ -1,110 +1,19 @@
 {
-  "last_update": "2026-07-22T14:36:03.106966+00:00",
+  "last_update": "2026-07-22T15:27:30.000000+00:00",
   "signals": [
     {
-      "pair_name": "GBP/USD",
-      "signal": "SELL",
-      "current_price": 1.33829,
-      "take_profit": 1.33698,
-      "stop_loss": "Aucun",
-      "confidence": 73,
-      "rsi": 54.9,
-      "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:SELL/CHO:SELL/MOI:SELL/LLA:BUY/GRA:SELL",
-      "timeframe": "5m",
-      "macro_info": {
-        "base": "GBP",
-        "quote": "USD",
-        "rate_base": 3.75,
-        "rate_quote": 3.75,
-        "rate_diff": 0.0,
-        "inf_base": 2.6,
-        "inf_quote": 3.5,
-        "gdp_base": 0.6,
-        "gdp_quote": 2.1
-      }
-    },
-    {
-      "pair_name": "AUD/CAD",
+      "pair_name": "EUR/USD",
       "signal": "BUY",
-      "current_price": 0.98528,
-      "take_profit": 0.98982,
-      "stop_loss": "Aucun",
-      "confidence": 73,
-      "rsi": 47.6,
-      "macd_trend": "Haussier 📈",
-      "forecast_dir": "TFM:SELL/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY",
-      "timeframe": "15m",
-      "macro_info": {
-        "base": "AUD",
-        "quote": "CAD",
-        "rate_base": 4.35,
-        "rate_quote": 2.25,
-        "rate_diff": 2.0999999999999996,
-        "inf_base": 4.0,
-        "inf_quote": 2.8,
-        "gdp_base": 0.3,
-        "gdp_quote": 0.0
-      }
-    },
-    {
-      "pair_name": "AUD/CHF",
-      "signal": "BUY",
-      "current_price": 0.56869,
-      "take_profit": 0.57227,
-      "stop_loss": "Aucun",
-      "confidence": 68,
-      "rsi": 56.0,
-      "macd_trend": "Haussier 📈",
-      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:BUY/LLA:SELL/GRA:BUY",
-      "timeframe": "30m",
-      "macro_info": {
-        "base": "AUD",
-        "quote": "CHF",
-        "rate_base": 4.35,
-        "rate_quote": 0.0,
-        "rate_diff": 4.35,
-        "inf_base": 4.0,
-        "inf_quote": 0.5,
-        "gdp_base": 0.3,
-        "gdp_quote": 0.4
-      }
-    },
-    {
-      "pair_name": "USD/SEK",
-      "signal": "BUY",
-      "current_price": 9.69803,
-      "take_profit": 9.71208,
-      "stop_loss": "Aucun",
-      "confidence": 62,
-      "rsi": 52.9,
-      "macd_trend": "Haussier 📈",
-      "forecast_dir": "TFM:BUY/CHO:SELL/MOI:HOLD/LLA:BUY/GRA:BUY",
-      "timeframe": "5m",
-      "macro_info": null
-    },
-    {
-      "pair_name": "GBP/CAD",
-      "signal": "SELL",
-      "current_price": 1.885,
-      "take_profit": 1.8799,
-      "stop_loss": "Aucun",
-      "confidence": 60,
-      "rsi": 33.0,
-      "macd_trend": "Baissier 📉",
-      "forecast_dir": "TFM:SELL/CHO:BUY/MOI:SELL/LLA:BUY/GRA:SELL",
-      "timeframe": "15m",
-      "macro_info": {
-        "base": "GBP",
-        "quote": "CAD",
-        "rate_base": 3.75,
-        "rate_quote": 2.25,
-        "rate_diff": 1.5,
-        "inf_base": 2.6,
-        "inf_quote": 2.8,
-        "gdp_base": 0.6,
-        "gdp_quote": 0.0
-      }
+      "current_price": 1.08500,
+      "take_profit": 1.08900,
+      "stop_loss": 1.08200,
+      "confidence": 75,
+      "rsi": 45.0,
+      "macd_trend": "Haussier",
+      "forecast_dir": "BUY",
+      "smc_zone": "N/A",
+      "is_ote": false,
+      "orderbook_walls": ""
     }
   ]
 }
