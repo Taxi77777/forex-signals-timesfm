@@ -64,16 +64,17 @@ def _majority_consensus(dirs: dict) -> tuple:
     """
     avail = {k: v for k, v in dirs.items() if v != "N/A"}
     n = len(avail)
-    if n < 3:
+    if n < 2:
         return ("HOLD", n, False)
     
     buys = list(avail.values()).count("BUY")
     sells = list(avail.values()).count("SELL")
     
-    # 3 IA sur 5 ou 3 sur 3/4 = Majorité réelle atteinte
-    if buys >= 3:
+    # 2 sur 2 en test local, ou 3 sur 5 sur GitHub Actions = Majorité réelle
+    min_required = 2 if n <= 2 else 3
+    if buys >= min_required:
         return ("BUY", n, True)
-    if sells >= 3:
+    if sells >= min_required:
         return ("SELL", n, True)
         
     return ("HOLD", n, False)
