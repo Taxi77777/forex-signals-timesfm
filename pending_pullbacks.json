@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "symbol": "AUDCHF=X",
+    "pair_name": "AUD/CHF",
+    "signal": "BUY",
+    "confidence": 73,
+    "current_price": 0.56968,
+    "take_profit": 0.57324,
+    "stop_loss": "Aucun",
+    "tp_pct": 0.625,
+    "sl_pct": 0.0,
+    "rsi": 67.7,
+    "rsi_status": "Neutre ⚖️",
+    "macd_trend": "Haussier 📈",
+    "ema_trend": "Haussier 📈",
+    "bb_position": "Proche Borne Haute ⚠️",
+    "atr": 0.00102,
+    "forecast_dir": "TFM:HOLD/CHO:BUY/MOI:BUY/LLA:BUY/GRA:BUY",
+    "forecast_4h": 0.56972,
+    "forecast_24h": 0.56972,
+    "fisher": 1.73,
+    "fisher_status": "Neutre",
+    "timestamp": 1784682891.0531883,
+    "timeframe": "30m"
+  }
+]
