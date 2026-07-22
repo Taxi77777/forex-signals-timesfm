@@ -167,19 +167,9 @@ def generate_signal(
     elif ind["stoch_k"] > 80:
         votes.append(("SELL", 1))
 
-    # ── Fisher : croisement en zone extreme (poids gradue selon la profondeur) ────
+    # ── Fisher désactivé pour le Forex (sur demande) ────
     fisher = ind["fisher"]
     depth  = ind["fisher_depth"]
-    if ind["fisher_cross_up"]:
-        if depth <= -4.0:   votes.append(("BUY",  5))
-        elif depth <= -3.0: votes.append(("BUY",  4))
-        elif depth <= -2.0: votes.append(("BUY",  3))
-        elif depth <= -1.5: votes.append(("BUY",  1))
-    if ind["fisher_cross_down"]:
-        if depth >= 4.0:    votes.append(("SELL", 5))
-        elif depth >= 3.0:  votes.append(("SELL", 4))
-        elif depth >= 2.0:  votes.append(("SELL", 3))
-        elif depth >= 1.5:  votes.append(("SELL", 1))
 
     # ── Les 5 IA (poids triple chacune) ──────────────────────────────────────
     forecast = get_forecast_direction(current_price, timesfm_predictions)
