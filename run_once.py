@@ -531,8 +531,15 @@ def main():
                     blocked_by_correlation.add((tf, p1))
                     blocked_by_correlation.add((tf, p2))
                 
-    strong_signals = [s for s in strong_signals if (s.timeframe, s.symbol) not in blocked_by_correlation]
-    strong_signals.sort(key=lambda s: s.confidence, reverse=True)
+    # Tri d'élite : Les meilleures opportunités au sommet (Confiance + Divergence RSI + Pullback)
+    strong_signals.sort(
+        key=lambda s: (
+            s.confidence,
+            1 if s.rsi_status and "Divergence" in str(s.rsi_status) else 0,
+            1 if "Pullback" in getattr(s, "macro_warning", "") else 0
+        ),
+        reverse=True
+    )
     
     # Exporter au format JSON pour le site web (GitHub Pages)
     web_data = {
