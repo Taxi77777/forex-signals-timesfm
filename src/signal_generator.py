@@ -133,13 +133,31 @@ def generate_signal(
     # ─── Système de vote ────────────────────────────────────────────────────────
     votes = []          # liste de tuples (signal, poids)
 
-    # ── RSI ──────────────────────────────────────────────────────────────────
+    # ── RSI & Divergence RSI (Anticipation Forex) ─────────────────────────────
     if ind["rsi"] < config.RSI_OVERSOLD:
         votes.append(("BUY",  2))   # survente
     elif ind["rsi"] > config.RSI_OVERBOUGHT:
         votes.append(("SELL", 2))   # surachat
     else:
         votes.append(("HOLD", 1))
+
+    if ind.get("rsi_divergence") == "BEARISH":
+        votes.append(("SELL", 4))   # Divergence Baissière : Anticipation Vente puissante
+        logger.info(f"⚡ Divergence Baissière RSI détectée sur {pair_name} → Vote SELL +4")
+    elif ind.get("rsi_divergence") == "BULLISH":
+        votes.append(("BUY", 4))    # Divergence Haussière : Anticipation Achat puissante
+        logger.info(f"⚡ Divergence Haussière RSI détectée sur {pair_name} → Vote BUY +4")
+
+    # ── Pullback RSI 15m vs Tendance 1H (Sell on Rally / Buy on Dip) ──────────
+    if df_1h is not None and not df_1h.empty:
+        from src.indicators import compute_all_indicators
+        df_1h_tmp = compute_all_indicators(df_1h)
+        if not df_1h_tmp.empty:
+            l1h = df_1h_tmp.iloc[-1]
+            if float(l1h["ema20"]) < float(l1h["ema50"]) and ind["rsi"] > 60:
+                votes.append(("SELL", 3))   # Rally 15m dans tendance baissière 1H -> Opportunité Vente
+            elif float(l1h["ema20"]) > float(l1h["ema50"]) and ind["rsi"] < 40:
+                votes.append(("BUY", 3))    # Dip 15m dans tendance haussière 1H -> Opportunité Achat
 
     # ── MACD ─────────────────────────────────────────────────────────────────
     if ind["macd_hist"] > 0:

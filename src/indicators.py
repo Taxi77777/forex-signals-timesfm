@@ -203,10 +203,28 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
         elif depth >= 2.0:  fisher_status = "⚠️ Croisement extreme haut (SELL)"
         else:               fisher_status = "📈 Croisement zone haute (SELL leger)"
 
+    # ── Divergence RSI (Anticipation Forex) ──────────────────────────────────
+    recent_price_max = df["High"].iloc[-5:].max() if len(df) >= 15 else close
+    prev_price_max   = df["High"].iloc[-15:-5].max() if len(df) >= 15 else close
+    recent_rsi_max   = df["rsi"].iloc[-5:].max() if len(df) >= 15 else rsi_value
+    prev_rsi_max     = df["rsi"].iloc[-15:-5].max() if len(df) >= 15 else rsi_value
+
+    recent_price_min = df["Low"].iloc[-5:].min() if len(df) >= 15 else close
+    prev_price_min   = df["Low"].iloc[-15:-5].min() if len(df) >= 15 else close
+    recent_rsi_min   = df["rsi"].iloc[-5:].min() if len(df) >= 15 else rsi_value
+    prev_rsi_min     = df["rsi"].iloc[-15:-5].min() if len(df) >= 15 else rsi_value
+
+    rsi_divergence = "NONE"
+    if recent_price_max > prev_price_max and recent_rsi_max < prev_rsi_max - 2.0 and recent_rsi_max > 60:
+        rsi_divergence = "BEARISH"  # Divergence Baissière (Signal Vente très fort)
+    elif recent_price_min < prev_price_min and recent_rsi_min > prev_rsi_min + 2.0 and recent_rsi_min < 40:
+        rsi_divergence = "BULLISH"  # Divergence Haussière (Signal Achat très fort)
+
     return {
         "close":       close,
         "rsi":         rsi_value,
         "rsi_status":  rsi_status,
+        "rsi_divergence": rsi_divergence,
         "macd_hist":   macd_hist,
         "macd_trend":  macd_trend,
         "ema20":       ema20,
