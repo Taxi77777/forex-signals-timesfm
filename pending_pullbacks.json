@@ -1,1 +1,26 @@
-[]
+[
+  {
+    "symbol": "GBPCAD=X",
+    "pair_name": "GBP/CAD",
+    "signal": "SELL",
+    "confidence": 60,
+    "current_price": 1.88281,
+    "take_profit": 1.87955,
+    "stop_loss": "Aucun",
+    "tp_pct": 0.173,
+    "sl_pct": 0.0,
+    "rsi": 40.5,
+    "rsi_status": "Neutre ⚖️",
+    "macd_trend": "Baissier 📉",
+    "ema_trend": "Baissier 📉",
+    "bb_position": "Proche Borne Basse ⚠️",
+    "atr": 0.0013,
+    "forecast_dir": "TFM:BUY/CHO:BUY/MOI:SELL/LLA:SELL/GRA:SELL",
+    "forecast_4h": 1.88312,
+    "forecast_24h": 1.88312,
+    "fisher": -0.41,
+    "fisher_status": "Neutre",
+    "timestamp": 1784759579.0743566,
+    "timeframe": "30m"
+  }
+]
