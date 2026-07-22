@@ -5,7 +5,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2026, Taxi77777 Forex AI"
 #property link      "https://github.com/Taxi77777/forex-signals-timesfm"
-#property version   "1.00"
+#property version   "1.10"
 #property strict
 
 //--- Inputs Utilisateur
@@ -18,6 +18,13 @@ input int      InpCheckInterval  = 10;              // Fréquence de vérificati
 input bool     InpUseTrailing    = true;            // Activer le Trailing Stop automatique
 input int      InpTrailingPips   = 15;              // Pips de Trailing Stop
 
+//--- Plage Horaire de Trading (Pause de nuit Rollover 22h00 -> 00h10)
+input int      InpPauseStartHour   = 22;            // Heure de début de la pause (ex: 22h)
+input int      InpPauseStartMin    = 0;             // Minute de début (ex: 0m)
+input int      InpPauseEndHour     = 0;             // Heure de fin de la pause (ex: 0h / Minuit)
+input int      InpPauseEndMin      = 10;            // Minute de fin de la pause (ex: 10m)
+input bool     InpCloseTradesOnPause = false;       // Clôturer les trades ouverts à 22h00 ? (false = laisse tourner avec TP/SL)
+
 //--- Variables Globales
 datetime g_lastCheckTime = 0;
 string   g_processedTimestamp = "";
@@ -27,8 +34,9 @@ string   g_processedTimestamp = "";
 //+------------------------------------------------------------------+
 int OnInit()
 {
-   Print("🤖 ForexAI Signal Receiver initialisé avec succès !");
+   Print("🤖 ForexAI Signal Receiver v1.10 initialisé avec succès !");
    Print("🌐 Surveillance de l'URL : ", InpJsonUrl);
+   Print("⏰ Pause Rollover configurée : ", InpPauseStartHour, "h", InpPauseStartMin, " -> ", InpPauseEndHour, "h", InpPauseEndMin);
    EventSetTimer(InpCheckInterval);
    return(INIT_SUCCEEDED);
 }
@@ -60,10 +68,49 @@ void OnTick()
 }
 
 //+------------------------------------------------------------------+
+//| Vérifie si l'heure actuelle est autorisée à trader              |
+//+------------------------------------------------------------------+
+bool IsTradingTimeAllowed()
+{
+   MqlDateTime dt;
+   TimeToStruct(TimeCurrent(), dt); // Heure du serveur du courtier (TradersWay)
+   
+   int currentMinOfDay = dt.hour * 60 + dt.min;
+   int pauseStartMin   = InpPauseStartHour * 60 + InpPauseStartMin;
+   int pauseEndMin     = InpPauseEndHour * 60 + InpPauseEndMin;
+
+   // Période de pause traversant minuit (ex: 22h00 = 1320m à 00h10 = 10m)
+   if(pauseStartMin > pauseEndMin)
+   {
+      if(currentMinOfDay >= pauseStartMin || currentMinOfDay < pauseEndMin)
+      {
+         return false; // Dans la période de pause Rollover
+      }
+   }
+   else
+   {
+      if(currentMinOfDay >= pauseStartMin && currentMinOfDay < pauseEndMin)
+      {
+         return false;
+      }
+   }
+   return true;
+}
+
+//+------------------------------------------------------------------+
 //| Télécharge et exécute les signaux depuis GitHub                  |
 //+------------------------------------------------------------------+
 void CheckAndExecuteSignals()
 {
+   bool isAllowed = IsTradingTimeAllowed();
+
+   if(!isAllowed)
+   {
+      string lastUpdate = "PAUSE DE NUIT (22h00 - 00h10)";
+      UpdateHUD(lastUpdate);
+      return;
+   }
+
    string jsonContent = FetchJsonFromUrl(InpJsonUrl);
    if(jsonContent == "") return;
 
@@ -134,7 +181,7 @@ string FetchJsonFromUrl(string url)
    {
       if(res == -1)
       {
-         Print("❌ WebRequest Erreur ", GetLastError(), ". Assurez-vous d'avoir ajouté l'URL 'https://raw.githubusercontent.com' dans MT4 (Outils -> Options -> Expert Advisors -> Autoriser WebRequest).");
+         Print("❌ WebRequest Erreur ", GetLastError(), ". Assurez-vous d'avoir ajouté l'URL 'https://raw.githubusercontent.com' dans MT4.");
       }
       return "";
    }
@@ -316,13 +363,16 @@ string ExtractJsonValue(string json, string key)
 //+------------------------------------------------------------------+
 void UpdateHUD(string lastUpdate)
 {
-   string hud = "🤖 === FOREX AI GITHUB EXECUTOR === 🤖\n";
+   bool isAllowed = IsTradingTimeAllowed();
+   string statusStr = isAllowed ? "CONNECTÉ À GITHUB ✅" : "PAUSE ROLLOVER DE NUIT 🛑 (22h00 - 00h10)";
+
+   string hud = "🤖 === FOREX AI GITHUB EXECUTOR v1.10 === 🤖\n";
    hud += "--------------------------------------\n";
    hud += "💼 Solde Compte   : " + DoubleToStr(AccountBalance(), 2) + " " + AccountCurrency() + "\n";
    hud += "📊 Équité Compte  : " + DoubleToStr(AccountEquity(), 2) + " " + AccountCurrency() + "\n";
    hud += "🎯 Open Trades    : " + IntegerToString(CountOpenTrades()) + " / " + IntegerToString(InpMaxOpenTrades) + "\n";
-   hud += "📡 Dernier Scan   : " + lastUpdate + "\n";
+   hud += "⏱️ Pause Rollover : " + IntegerToString(InpPauseStartHour) + "h" + IntegerToString(InpPauseStartMin) + " -> " + IntegerToString(InpPauseEndHour) + "h" + IntegerToString(InpPauseEndMin) + "\n";
    hud += "--------------------------------------\n";
-   hud += "🌐 Status : CONNECTÉ À GITHUB ✅\n";
+   hud += "🌐 Status : " + statusStr + "\n";
    Comment(hud);
 }
