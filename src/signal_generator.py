@@ -44,8 +44,8 @@ class TradingSignal:
     is_ote:        bool = False
 
 
-def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02) -> str:
-    """Direction prédite par un modèle IA. 'N/A' = modèle indisponible."""
+def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.005) -> str:
+    """Direction prédite par un modèle IA. 'N/A' = modèle indisponible (seuil 0.005% adapté Forex)."""
     if predictions is None or len(predictions) == 0:
         return "N/A"
     idx = min(config.FORECAST_HORIZON - 1, len(predictions) - 1)
@@ -60,9 +60,7 @@ def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.02
 
 def _majority_consensus(dirs: dict) -> tuple:
     """
-    Consensus MAJORITE IA : au moins 3 IA disponibles doivent etre d'accord.
-    Minimum 3 modeles disponibles requis.
-    Retourne (direction, nb_disponibles, consensus_atteint: bool).
+    Consensus MAJORITÉ IA : au moins 3 IA disponibles sur 5 doivent être d'accord (60%+).
     """
     avail = {k: v for k, v in dirs.items() if v != "N/A"}
     n = len(avail)
@@ -72,9 +70,10 @@ def _majority_consensus(dirs: dict) -> tuple:
     buys = list(avail.values()).count("BUY")
     sells = list(avail.values()).count("SELL")
     
-    if buys >= 4:
+    # 3 IA sur 5 ou 3 sur 3/4 = Majorité réelle atteinte
+    if buys >= 3:
         return ("BUY", n, True)
-    if sells >= 4:
+    if sells >= 3:
         return ("SELL", n, True)
         
     return ("HOLD", n, False)
@@ -114,8 +113,8 @@ def generate_signal(
     last_row = df_with_indicators.iloc[-1]
     if "adx" in last_row:
         adx = float(last_row["adx"])
-        if adx < 15:
-            logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 15) → Signal annulé")
+        if adx < 10:
+            logger.info(f"⏳ Filtre Range actif sur {symbol} (ADX: {adx:.1f} < 10) → Signal annulé")
             return None
 
     # ── Filtre de Volatilité ATR (Anti-Flat / Accélération) ───────────────────
