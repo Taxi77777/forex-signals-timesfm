@@ -139,6 +139,36 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
     except Exception as e:
         logger.error(f"Error computing SuperTrend: {e}")
 
+    # ── STOCHASTIQUE RSI & CROISEMENT REVERSAL (Zone 20/80) ──
+    try:
+        rsi_s = df["rsi"]
+        rsi_min = rsi_s.rolling(14).min()
+        rsi_max = rsi_s.rolling(14).max()
+        stoch_rsi_raw = (rsi_s - rsi_min) / (rsi_max - rsi_min + 1e-8) * 100
+        df["stoch_rsi_k"] = stoch_rsi_raw.rolling(3).mean()
+        df["stoch_rsi_d"] = df["stoch_rsi_k"].rolling(3).mean()
+    except Exception as e:
+        df["stoch_rsi_k"] = df["stoch_k"]
+        df["stoch_rsi_d"] = df["stoch_k"]
+
+    # ── BOUGIE D'AVALEMENT SUR EMA20 (Engulfing Candle Reversal) ──
+    try:
+        o = df["Open"].values
+        c = df["Close"].values
+        h = df["High"].values
+        l = df["Low"].values
+        ema20_arr = df["ema20"].values
+        
+        engulf = ["NONE"] * len(df)
+        for i in range(1, len(df)):
+            if c[i] > o[i] and c[i-1] < o[i-1] and c[i] >= o[i-1] and l[i] <= ema20_arr[i] * 1.002:
+                engulf[i] = "BULLISH_ENGULFING"
+            elif c[i] < o[i] and c[i-1] > o[i-1] and c[i] <= o[i-1] and h[i] >= ema20_arr[i] * 0.998:
+                engulf[i] = "BEARISH_ENGULFING"
+        df["engulfing_reversal"] = engulf
+    except Exception as e:
+        df["engulfing_reversal"] = "NONE"
+
     df.dropna(inplace=True)
     return df
 
@@ -237,24 +267,41 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
         elif recent_high > prev_swing_high and latest_close < prev_swing_high:
             liquidity_sweep = "BEARISH_SWEEP"  # Balayage des stops acheteurs -> Chute baissière intelligente
 
+    # ── STOCHASTIQUE RSI REVERSAL CROSS (20/80) ──
+    stoch_rsi_cross = "NONE"
+    if len(df) >= 3:
+        k1 = float(df.iloc[-1].get("stoch_rsi_k", 50))
+        d1 = float(df.iloc[-1].get("stoch_rsi_d", 50))
+        k2 = float(df.iloc[-2].get("stoch_rsi_k", 50))
+        d2 = float(df.iloc[-2].get("stoch_rsi_d", 50))
+        
+        if k1 > d1 and k2 <= d2 and k2 <= 25:
+            stoch_rsi_cross = "BUY_REVERSAL"
+        elif k1 < d1 and k2 >= d2 and k2 >= 75:
+            stoch_rsi_cross = "SELL_REVERSAL"
+
+    engulfing_reversal = df.iloc[-1].get("engulfing_reversal", "NONE")
+
     return {
-        "close":           close,
-        "rsi":             rsi_value,
-        "rsi_status":      rsi_status,
-        "rsi_divergence":  rsi_divergence,
-        "liquidity_sweep": liquidity_sweep,
-        "macd_hist":       macd_hist,
-        "macd_trend":      macd_trend,
-        "ema20":           ema20,
-        "ema50":           ema50,
-        "ema_trend":       ema_trend,
-        "atr":             atr,
-        "bb_upper":        bb_upper,
-        "bb_lower":        bb_lower,
-        "bb_position":     bb_position,
-        "stoch_k":         stoch_k,
-        "fisher":          fisher,
-        "fisher_status":   fisher_status,
+        "close":              close,
+        "rsi":                rsi_value,
+        "rsi_status":         rsi_status,
+        "rsi_divergence":     rsi_divergence,
+        "liquidity_sweep":    liquidity_sweep,
+        "stoch_rsi_cross":    stoch_rsi_cross,
+        "engulfing_reversal": engulfing_reversal,
+        "macd_hist":          macd_hist,
+        "macd_trend":         macd_trend,
+        "ema20":              ema20,
+        "ema50":              ema50,
+        "ema_trend":          ema_trend,
+        "atr":                atr,
+        "bb_upper":           bb_upper,
+        "bb_lower":           bb_lower,
+        "bb_position":        bb_position,
+        "stoch_k":            stoch_k,
+        "fisher":             fisher,
+        "fisher_status":      fisher_status,
         "fisher_cross_up":   fisher_cross_up,
         "fisher_cross_down": fisher_cross_down,
         "fisher_depth":      depth,

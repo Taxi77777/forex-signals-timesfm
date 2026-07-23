@@ -157,6 +157,22 @@ def generate_signal(
         votes.append(("SELL", 4))   # Rejet bancaire baissier après chasse aux stops
         logger.info(f"🔥 Liquidity Sweep Baissier (Chasse aux Stops Banques) sur {pair_name} → Vote SELL +4")
 
+    # ── Croisement Stochastique RSI (Fin de Pullback 20/80) ───────────
+    if ind.get("stoch_rsi_cross") == "BUY_REVERSAL":
+        votes.append(("BUY", 4))    # Fin de Pullback Achat (Sortie de zone 20 sur Stoch RSI)
+        logger.info(f"⚡ Croisement Stoch RSI Reversal (Fin Pullback BUY) sur {pair_name} → Vote BUY +4")
+    elif ind.get("stoch_rsi_cross") == "SELL_REVERSAL":
+        votes.append(("SELL", 4))   # Fin de Pullback Vente (Sortie de zone 80 sur Stoch RSI)
+        logger.info(f"⚡ Croisement Stoch RSI Reversal (Fin Pullback SELL) sur {pair_name} → Vote SELL +4")
+
+    # ── Bougie d'Avalement sur EMA20 (Engulfing Candle Reversal) ──────
+    if ind.get("engulfing_reversal") == "BULLISH_ENGULFING":
+        votes.append(("BUY", 3))    # Avalement haussier sur EMA20
+        logger.info(f"🔥 Avalement Haussier EMA20 (Engulfing BUY) sur {pair_name} → Vote BUY +3")
+    elif ind.get("engulfing_reversal") == "BEARISH_ENGULFING":
+        votes.append(("SELL", 3))   # Avalement baissier sur EMA20
+        logger.info(f"🔥 Avalement Baissier EMA20 (Engulfing SELL) sur {pair_name} → Vote SELL +3")
+
     # ── Pullback RSI 15m vs Tendance 1H (Sell on Rally / Buy on Dip) ──────────
     if df_1h is not None and not df_1h.empty:
         from src.indicators import compute_all_indicators
