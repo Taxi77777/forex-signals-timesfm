@@ -82,7 +82,7 @@ def format_signal_message(signal: TradingSignal) -> str:
 
     tf_tag = f" ({signal.timeframe.upper()})" if hasattr(signal, "timeframe") else ""
     return (
-        f"{emoji} *SIGNAL FOREX — {signal.pair_name}{tf_tag}*{strong_tag}\n"
+        f"💱 *SIGNAL FOREX [TRADERSWAY]* — *{signal.pair_name}{tf_tag}*{strong_tag}\n"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"📊 Signal     : {emoji} *{signal.signal}*\n"
         f"💰 Prix actuel: `{signal.current_price}`\n"
