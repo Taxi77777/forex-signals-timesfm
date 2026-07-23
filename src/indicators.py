@@ -220,23 +220,41 @@ def get_indicator_summary(df: pd.DataFrame) -> dict:
     elif recent_price_min < prev_price_min and recent_rsi_min > prev_rsi_min + 2.0 and recent_rsi_min < 40:
         rsi_divergence = "BULLISH"  # Divergence Haussière (Signal Achat très fort)
 
+    # ── Liquidity Sweep Detection (SMC Rejection Wick - Chasse aux Stops Banques) ──────────
+    liquidity_sweep = "NONE"
+    if len(df) >= 20:
+        prev_swing_low   = float(df["Low"].iloc[-20:-3].min())
+        prev_swing_high  = float(df["High"].iloc[-20:-3].max())
+        recent_low       = float(df["Low"].iloc[-3:].min())
+        recent_high      = float(df["High"].iloc[-3:].max())
+        latest_close     = float(close)
+
+        # Bullish Sweep: Mèche sous le creux précédent + réintégration au-dessus du creux
+        if recent_low < prev_swing_low and latest_close > prev_swing_low:
+            liquidity_sweep = "BULLISH_SWEEP"  # Balayage des stops vendeurs -> Rebond haussier imminent
+
+        # Bearish Sweep: Mèche au-dessus du sommet précédent + réintégration sous le sommet
+        elif recent_high > prev_swing_high and latest_close < prev_swing_high:
+            liquidity_sweep = "BEARISH_SWEEP"  # Balayage des stops acheteurs -> Chute baissière intelligente
+
     return {
-        "close":       close,
-        "rsi":         rsi_value,
-        "rsi_status":  rsi_status,
-        "rsi_divergence": rsi_divergence,
-        "macd_hist":   macd_hist,
-        "macd_trend":  macd_trend,
-        "ema20":       ema20,
-        "ema50":       ema50,
-        "ema_trend":   ema_trend,
-        "atr":         atr,
-        "bb_upper":    bb_upper,
-        "bb_lower":    bb_lower,
-        "bb_position": bb_position,
-        "stoch_k":     stoch_k,
-        "fisher":      fisher,
-        "fisher_status": fisher_status,
+        "close":           close,
+        "rsi":             rsi_value,
+        "rsi_status":      rsi_status,
+        "rsi_divergence":  rsi_divergence,
+        "liquidity_sweep": liquidity_sweep,
+        "macd_hist":       macd_hist,
+        "macd_trend":      macd_trend,
+        "ema20":           ema20,
+        "ema50":           ema50,
+        "ema_trend":       ema_trend,
+        "atr":             atr,
+        "bb_upper":        bb_upper,
+        "bb_lower":        bb_lower,
+        "bb_position":     bb_position,
+        "stoch_k":         stoch_k,
+        "fisher":          fisher,
+        "fisher_status":   fisher_status,
         "fisher_cross_up":   fisher_cross_up,
         "fisher_cross_down": fisher_cross_down,
         "fisher_depth":      depth,

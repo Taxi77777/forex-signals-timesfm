@@ -148,6 +148,14 @@ def generate_signal(
         votes.append(("BUY", 4))    # Divergence Haussière : Anticipation Achat puissante
         logger.info(f"⚡ Divergence Haussière RSI détectée sur {pair_name} → Vote BUY +4")
 
+    # ── Liquidity Sweep (SMC Rejection Wick - Chasse aux Stops Banques) ─────────
+    if ind.get("liquidity_sweep") == "BULLISH_SWEEP":
+        votes.append(("BUY", 4))    # Rejet bancaire haussier après chasse aux stops
+        logger.info(f"💎 Liquidity Sweep Haussier (Chasse aux Stops Banques) sur {pair_name} → Vote BUY +4")
+    elif ind.get("liquidity_sweep") == "BEARISH_SWEEP":
+        votes.append(("SELL", 4))   # Rejet bancaire baissier après chasse aux stops
+        logger.info(f"🔥 Liquidity Sweep Baissier (Chasse aux Stops Banques) sur {pair_name} → Vote SELL +4")
+
     # ── Pullback RSI 15m vs Tendance 1H (Sell on Rally / Buy on Dip) ──────────
     if df_1h is not None and not df_1h.empty:
         from src.indicators import compute_all_indicators
