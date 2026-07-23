@@ -42,6 +42,7 @@ class TradingSignal:
     timeframe:     str = "15m"
     smc_zone:      str = "N/A"
     is_ote:        bool = False
+    liquidity_sweep: str = "NONE"
 
 
 def _ai_direction(current_price: float, predictions, threshold_pct: float = 0.005) -> str:
@@ -416,6 +417,7 @@ def generate_signal(
         timeframe=     timeframe,
         smc_zone=      smc_zone,
         is_ote=        is_ote,
+        liquidity_sweep= ind.get("liquidity_sweep", "NONE"),
     )
 
     logger.info(

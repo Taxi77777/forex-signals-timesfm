@@ -97,6 +97,7 @@ def format_signal_message(signal: TradingSignal) -> str:
         f"Bollinger : {signal.bb_position}\n"
         f"🎯 Zone SMC : *{signal.smc_zone}*\n"
         f"⚡ Confluence OTE : *{'Oui (61.8%-79%)' if signal.is_ote else 'Non'}*\n"
+        f"{'💎 *Liquidity Sweep* : Rejet Mèche Bancaire (BUY) ✅\n' if getattr(signal, 'liquidity_sweep', 'NONE') == 'BULLISH_SWEEP' else '🔥 *Liquidity Sweep* : Rejet Mèche Bancaire (SELL) ✅\n' if getattr(signal, 'liquidity_sweep', 'NONE') == 'BEARISH_SWEEP' else ''}"
         f"━━━━━━━━━━━━━━━━━━━━━━━━\n"
         f"{macro_text}"
         f"⏰ {time_str} (Paris)\n"
