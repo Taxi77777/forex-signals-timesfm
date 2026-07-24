@@ -1,4 +1,143 @@
 {
-  "last_update": "2026-07-23T06:37:34.926919+00:00",
-  "signals": []
+  "last_update": "2026-07-24T12:07:25.398349+00:00",
+  "signals": [
+    {
+      "pair_name": "GBP/AUD",
+      "signal": "SELL",
+      "current_price": 1.90637,
+      "take_profit": 1.90287,
+      "stop_loss": "Aucun",
+      "confidence": 77,
+      "rsi": 41.5,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:SELL/CHO:SELL/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "30m",
+      "macro_info": {
+        "base": "GBP",
+        "quote": "AUD",
+        "rate_base": 3.75,
+        "rate_quote": 4.35,
+        "rate_diff": -0.5999999999999996,
+        "inf_base": 2.6,
+        "inf_quote": 4.0,
+        "gdp_base": 0.6,
+        "gdp_quote": 0.3
+      }
+    },
+    {
+      "pair_name": "EUR/GBP",
+      "signal": "BUY",
+      "current_price": 0.85378,
+      "take_profit": 0.85494,
+      "stop_loss": "Aucun",
+      "confidence": 76,
+      "rsi": 38.2,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "30m",
+      "macro_info": {
+        "base": "EUR",
+        "quote": "GBP",
+        "rate_base": 2.4,
+        "rate_quote": 3.75,
+        "rate_diff": -1.35,
+        "inf_base": 2.8,
+        "inf_quote": 2.6,
+        "gdp_base": 0.0,
+        "gdp_quote": 0.6
+      }
+    },
+    {
+      "pair_name": "EUR/JPY",
+      "signal": "BUY",
+      "current_price": 186.31599,
+      "take_profit": 186.55294,
+      "stop_loss": "Aucun",
+      "confidence": 70,
+      "rsi": 41.2,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "30m",
+      "macro_info": {
+        "base": "EUR",
+        "quote": "JPY",
+        "rate_base": 2.4,
+        "rate_quote": 1.0,
+        "rate_diff": 1.4,
+        "inf_base": 2.8,
+        "inf_quote": 1.7,
+        "gdp_base": 0.0,
+        "gdp_quote": 0.5
+      }
+    },
+    {
+      "pair_name": "EUR/GBP",
+      "signal": "BUY",
+      "current_price": 0.85378,
+      "take_profit": 0.85469,
+      "stop_loss": "Aucun",
+      "confidence": 69,
+      "rsi": 34.8,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "15m",
+      "macro_info": {
+        "base": "EUR",
+        "quote": "GBP",
+        "rate_base": 2.4,
+        "rate_quote": 3.75,
+        "rate_diff": -1.35,
+        "inf_base": 2.8,
+        "inf_quote": 2.6,
+        "gdp_base": 0.0,
+        "gdp_quote": 0.6
+      }
+    },
+    {
+      "pair_name": "EUR/JPY",
+      "signal": "BUY",
+      "current_price": 186.327,
+      "take_profit": 186.50748,
+      "stop_loss": "Aucun",
+      "confidence": 69,
+      "rsi": 38.5,
+      "macd_trend": "Baissier 📉",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "15m",
+      "macro_info": {
+        "base": "EUR",
+        "quote": "JPY",
+        "rate_base": 2.4,
+        "rate_quote": 1.0,
+        "rate_diff": 1.4,
+        "inf_base": 2.8,
+        "inf_quote": 1.7,
+        "gdp_base": 0.0,
+        "gdp_quote": 0.5
+      }
+    },
+    {
+      "pair_name": "EUR/CHF",
+      "signal": "BUY",
+      "current_price": 0.92988,
+      "take_profit": 0.9316,
+      "stop_loss": "Aucun",
+      "confidence": 61,
+      "rsi": 52.2,
+      "macd_trend": "Haussier 📈",
+      "forecast_dir": "TFM:BUY/CHO:BUY/MOI:N/A/LLA:N/A/GRA:N/A",
+      "timeframe": "15m",
+      "macro_info": {
+        "base": "EUR",
+        "quote": "CHF",
+        "rate_base": 2.4,
+        "rate_quote": 0.0,
+        "rate_diff": 2.4,
+        "inf_base": 2.8,
+        "inf_quote": 0.5,
+        "gdp_base": 0.0,
+        "gdp_quote": 0.4
+      }
+    }
+  ]
 }
