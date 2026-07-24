@@ -573,15 +573,6 @@ def main():
         logger.info(f"OK — {len(strong_signals)} signaux forts envoyés !")
     else:
         logger.info("Aucun signal fort détecté pour cette heure-ci.")
-        # Heartbeat : confirme que le bot tourne même sans signal
-        total_paires = sum(len(all_data_by_interval[tf]) for tf in intervals)
-        send_message(
-            f"🔍 *Scan Forex terminé*\n"
-            f"📊 Paires analysées sur 5m, 15m et 30m ({total_paires} séries)\n"
-            f"🤖 {len(signals)} signaux évalués — 0 signal fort\n"
-            f"Consensus majoritaire (>=3/5) IA actif\n"
-            f"_Prochain scan dans 30 min_"
-        )
 
     logger.info("=== Analyse terminée ===")
 
